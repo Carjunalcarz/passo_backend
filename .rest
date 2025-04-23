@@ -1,0 +1,21 @@
+### Get JWT Token
+POST http://localhost:8000/token
+Content-Type: application/x-www-form-urlencoded
+
+username=ajncarz&password=ajncarz123
+
+###
+
+### Get Current User
+GET http://localhost:8000/users/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJham5jYXJ6IiwiZXhwIjoxNzQ1MzcxMTQ2fQ.2DPyFpE6RVS054O92GBIJHxoVXETk1K9nrdWr7E6aiI
+
+###
+
+GET http://localhost:8000/assessments?skip=1000&limit=1200
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJham5jYXJ6IiwiZXhwIjoxNzQ1MzcxMTQ2fQ.2DPyFpE6RVS054O92GBIJHxoVXETk1K9nrdWr7E6aiI
+
+###
+
+GET http://localhost:8000/assessments?municipality=CARMEN&barangay=TAGCATONG&limit=100
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJham5jYXJ6IiwiZXhwIjoxNzQ1MzcxMTQ2fQ.2DPyFpE6RVS054O92GBIJHxoVXETk1K9nrdWr7E6aiI
