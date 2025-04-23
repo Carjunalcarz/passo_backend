@@ -2,7 +2,7 @@
 POST http://localhost:8000/token
 Content-Type: application/x-www-form-urlencoded
 
-username=ajncarz&password=ajncarz123
+username=admin@admin.com&password=ajncarz123
 
 ###
 
@@ -12,8 +12,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJham5jYXJ6I
 
 ###
 
-GET http://localhost:8000/assessments?skip=1000&limit=1200
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJham5jYXJ6IiwiZXhwIjoxNzQ1MzcxMTQ2fQ.2DPyFpE6RVS054O92GBIJHxoVXETk1K9nrdWr7E6aiI
+GET http://localhost:8000/assessments?skip=0&limit=10
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDUzODkyNDd9.Zd58h3tXxLwSENFW2z0xmOGz7PUoY_9LRUJ-AwPltUY
 
 ###
 

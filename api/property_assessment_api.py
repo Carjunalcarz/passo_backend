@@ -1,31 +1,3 @@
-# from fastapi import APIRouter, Depends, HTTPException, Query
-# from sqlalchemy.orm import Session
-# from database.database import get_db
-# from models import property_assessment_model as models
-# from schemas import property_assessment_schema as schemas
-# from authentication.user_auth import verify_token
-# from fastapi.security import OAuth2PasswordBearer
-
-# router = APIRouter()
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-# def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-#     username = verify_token(token)
-#     if username is None:
-#         raise HTTPException(status_code=401, detail="Invalid token")
-#     return username
-
-# @router.get("/assessments", response_model=list[schemas.PropertyAssessment])
-# def get_assessments(
-#     skip: int = Query(0, ge=0),
-#     limit: int = Query(50, le=500),
-#     current_user: str = Depends(get_current_user),
-#     db: Session = Depends(get_db)
-# ):
-#     assessments = db.query(models.PropertyAssessmentClean).offset(skip).limit(limit).all()
-#     return assessments
-
-
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
@@ -47,7 +19,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
 @router.get("/assessments", response_model=schemas.PaginatedAssessmentResponse)
 def get_assessments(
     skip: int = Query(0, ge=0),
-    limit: int = Query(50, le=500),
+    limit: int = Query(0, le=300000),
     municipality: str | None = Query(None),
     barangay: str | None = Query(None),
     classification: str | None = Query(None),
