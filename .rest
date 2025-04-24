@@ -22,11 +22,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJham5jYXJ6I
 ###
 
 POST http://localhost:8000/assessments
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDU0NjMxNzJ9.k1Mo_zB3ubrh8s40OiKljztzzAnUQn5JWONLFNIItr0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDU0ODUxMTJ9.pFMwQNcrUx8_dqSP7SQlRjLAg3UPnpdVRn2rM5mu3Co
 Content-Type: application/json
 
 {
-    "tdn": "TEST123456782",
+    "tdn": "TEST1233456782",
     "market_val": 1000000,
     "ass_value": 800000,
     "sub_class": "Residential",
