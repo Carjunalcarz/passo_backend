@@ -22,3 +22,6 @@ app.add_middleware(
 # Include routers
 app.include_router(auth.router)
 app.include_router(property_assessment_api.router)
+
+
+# python -m uvicorn main:app --reload

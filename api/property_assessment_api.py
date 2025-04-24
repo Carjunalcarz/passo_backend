@@ -48,3 +48,60 @@ def get_assessments(
         "skip": skip,
         "limit": limit
     }
+
+@router.post("/assessments", response_model=schemas.PropertyAssessment)
+def create_assessment(
+    assessment: schemas.PropertyAssessment,
+    current_user: str = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    # Check if assessment with the same TDN already exists
+    existing_assessment = db.query(models.PropertyAssessmentClean).filter(
+        models.PropertyAssessmentClean.tdn == assessment.tdn
+    ).first()
+    
+    if existing_assessment:
+        raise HTTPException(
+            status_code=400,
+            detail="Assessment with this TDN already exists"
+        )
+    
+    # Create new assessment
+    db_assessment = models.PropertyAssessmentClean(**assessment.dict())
+    db.add(db_assessment)
+    db.commit()
+    db.refresh(db_assessment)
+    return db_assessment
+
+@router.put("/assessments/{tdn}", response_model=schemas.PropertyAssessment)
+def update_assessment(
+    tdn: str,
+    assessment: schemas.PropertyAssessment,
+    current_user: str = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    db_assessment = db.query(models.PropertyAssessmentClean).filter(models.PropertyAssessmentClean.tdn == tdn).first()
+    if not db_assessment:
+        raise HTTPException(status_code=404, detail="Assessment not found")
+    
+    # Update all fields from the request
+    for field, value in assessment.dict(exclude_unset=True).items():
+        setattr(db_assessment, field, value)
+    
+    db.commit()
+    db.refresh(db_assessment)
+    return db_assessment
+
+@router.delete("/assessments/{tdn}")
+def delete_assessment(
+    tdn: str,
+    current_user: str = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    db_assessment = db.query(models.PropertyAssessmentClean).filter(models.PropertyAssessmentClean.tdn == tdn).first()
+    if not db_assessment:
+        raise HTTPException(status_code=404, detail="Assessment not found")
+    
+    db.delete(db_assessment)
+    db.commit()
+    return {"message": "Assessment deleted successfully"}

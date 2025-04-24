@@ -19,3 +19,32 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZ
 
 GET http://localhost:8000/assessments?municipality=CARMEN&barangay=TAGCATONG&limit=100
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJham5jYXJ6IiwiZXhwIjoxNzQ1MzcxMTQ2fQ.2DPyFpE6RVS054O92GBIJHxoVXETk1K9nrdWr7E6aiI
+###
+
+POST http://localhost:8000/assessments
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDU0NjMxNzJ9.k1Mo_zB3ubrh8s40OiKljztzzAnUQn5JWONLFNIItr0
+Content-Type: application/json
+
+{
+    "tdn": "TEST123456782",
+    "market_val": 1000000,
+    "ass_value": 800000,
+    "sub_class": "Residential",
+    "eff_date": "2024-01-01",
+    "classification": "Residential",
+    "ass_level": 0.8,
+    "area": 100.5,
+    "taxability": "Taxable",
+    "gr_code": "GR001",
+    "gr": "General Residential",
+    "mun_code": "M001",
+    "municipality": "CARMEN",
+    "barangay_code": "B001",
+    "barangay": "Sample Barangay"
+}
+
+###
+
+# Delete an assessment
+DELETE http://localhost:8000/assessments/TEST123456782
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDU0NTkxOTd9.03S8P9czQfzI6DHh7L13UL9stzvx_nlaSWZPU3Jqbhw
