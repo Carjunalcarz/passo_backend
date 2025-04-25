@@ -26,7 +26,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZ
 Content-Type: application/json
 
 {
-    "tdn": "TEST1233456782",
+    "tdn": "TEST12333333456782",
     "market_val": 1000000,
     "ass_value": 800000,
     "sub_class": "Residential",

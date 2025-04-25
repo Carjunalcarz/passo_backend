@@ -20,7 +20,7 @@ class PropertyAssessment(BaseModel):
     barangay: Optional[str]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 class PaginatedAssessmentResponse(BaseModel):
     data: List[PropertyAssessment]
     total: int
