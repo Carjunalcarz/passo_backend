@@ -1,4 +1,6 @@
+@baseUrl = http://localhost:8000
 ### Get JWT Token
+
 POST http://localhost:8000/token
 Content-Type: application/x-www-form-urlencoded
 
@@ -48,3 +50,249 @@ Content-Type: application/json
 # Delete an assessment
 DELETE http://localhost:8000/assessments/TEST123456782
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDU0NTkxOTd9.03S8P9czQfzI6DHh7L13UL9stzvx_nlaSWZPU3Jqbhw
+
+
+
+
+
+
+### Add New Property Assessment
+POST {{baseUrl}}/add-assessments/
+Content-Type: application/json
+
+{
+    "approval_section": {
+        "tdn": "TDN2024-22",
+        "appraisedBy": "John Doe",
+        "appraisedDate": "2024-03-20",
+        "recommendingApproval": "Jane Smith",
+        "municipalityAssessorDate": "2024-03-21",
+        "approvedByProvince": "Robert Johnson",
+        "provincialAssessorDate": "2024-03-22"
+    },
+    "owner_details": {
+        "owner": "John Doea",
+        "ownerAddress": "123 Main St, City",
+        "admin_ben_user": "Admin User",
+        "transactionCode": "TRANS002",
+        "pin": "1234567890",
+        "tin": "123-456-789",
+        "telNo": "+1234567890",
+        "td": "TD2024-00122222"
+    }
+}
+
+
+
+####
+##all values are required ##
+POST http://your-api-endpoint.com/api/property-assessment
+Content-Type: application/json
+
+{
+  "approvalSection": {
+    "appraisedBy": "2323",
+    "appraisedDate": "2025-05-28",
+    "recommendingApproval": "2323",
+    "municipalityAssessorDate": "2025-05-30",
+    "approvedByProvince": "2323",
+    "provincialAssessorDate": "2025-05-30"
+  },
+  "street": "",
+  "ownerDetails": {
+    "owner": "",
+    "ownerAddress": "",
+    "admin_ben_user": "",
+    "transactionCode": "",
+    "pin": "",
+    "tin": "",
+    "telNo": "",
+    "td": "2025-002-003"
+  },
+  "landReference": {
+    "land_owner": "",
+    "block_no": "",
+    "tdn_no": "",
+    "pin": "",
+    "lot_no": "",
+    "survey_no": "",
+    "area": ""
+  },
+  "buildingLocation": {
+    "address_municipality": "Cabadbaran",
+    "address_barangay": "Bayabas",
+    "street": "",
+    "address_province": "Agusan del Norte"
+  },
+  "address_municipality": "Cabadbaran",
+  "address_barangay": "Bayabas",
+  "address_province": "Agusan del Norte",
+  "generalDescription": {
+    "building_permit_no": "32",
+    "certificate_of_completion_issued_on": "2025-05-20",
+    "certificate_of_occupancy_issued_on": "2025-05-22",
+    "date_of_occupied": "2025-05-22",
+    "bldg_age": "23",
+    "no_of_storeys": "2",
+    "area_of_1st_floor": "23",
+    "area_of_2nd_floor": "23",
+    "area_of_3rd_floor": "23",
+    "area_of_4th_floor": "23",
+    "total_floor_area": 92,
+    "kind_of_bldg": "IV-B",
+    "structural_type": "Restaurant",
+    "unitValue": 4820
+  },
+  "cct": {},
+  "floor_plan": [{}, {}, {}],
+  "structuralMaterial": {
+    "walls_reinforced_concrete": true,
+    "walls_plain_concrete": true,
+    "walls_chpb": false,
+    "walls_gi": false,
+    "walls_build_wall": false,
+    "walls_sawali": false,
+    "walls_bamboo": false,
+    "walls_other_checked": false,
+    "walls_other": "",
+    "foundation_reinforced_concrete": true,
+    "foundation_plain_concrete": false,
+    "foundation_other_checked": false,
+    "foundation_other": "",
+    "columns_steel": false,
+    "columns_concrete": false,
+    "columns_wood": false,
+    "columns_other_checked": false,
+    "columns_other": "",
+    "beams_steel": false,
+    "beams_concrete": false,
+    "beams_wood": false,
+    "beams_other_checked": false,
+    "beams_other": "",
+    "floor_reinforced_concrete": false,
+    "floor_plain_cement": false,
+    "floor_marble": false,
+    "floor_wood": false,
+    "floor_tiles": false,
+    "floor_other_checked": false,
+    "floor_other": "",
+    "truss_steel": false,
+    "truss_wood": false,
+    "truss_other_checked": false,
+    "roof_reinforced_concrete": false,
+    "roof_tiles": false,
+    "roof_gi_sheet": false,
+    "roof_aluminum": false,
+    "roof_asbestos": false,
+    "roof_long_span": false,
+    "roof_concrete_desk": false,
+    "roof_nipa": false,
+    "roof_other_checked": false,
+    "roof_other": "",
+    "walls_rc_1st": true,
+    "walls_rc_2nd": true,
+    "walls_rc_3rd": true,
+    "walls_rc_4th": true,
+    "walls_rc_5th": false,
+    "walls_pc_1st": true,
+    "walls_pc_2nd": true,
+    "walls_pc_3rd": true,
+    "walls_pc_4th": true,
+    "walls_pc_5th": true,
+    "walls_pc_6th": true,
+    "foundation_rc_1st": true,
+    "foundation_rc_2nd": true,
+    "foundation_rc_3rd": true,
+    "foundation_rc_4th": true,
+    "foundation_rc_5th": true
+  },
+  "truss_other": "",
+  "propertyAppraisal": {
+    "buildingType": "IV-B",
+    "buildingStructure": "Restaurant",
+    "totalArea": 92,
+    "unitValue": 4820,
+    "smv": 1,
+    "baseMarketValue": 443440,
+    "depreciation": 53212.8,
+    "marketValue": 390227.2
+  },
+  "additionalItem": "Carport",
+  "additionalItems": {
+    "items": [
+      {
+        "id": 1,
+        "label": "Flooring - Vinyl tiles and wood tiles",
+        "value": {
+          "label": "Flooring - Vinyl tiles and wood tiles",
+          "ratePerSqM": 157
+        },
+        "quantity": 13,
+        "amount": 2041,
+        "description": "23"
+      },
+      {
+        "id": 2,
+        "label": "Carport",
+        "value": {
+          "label": "Carport",
+          "percentage": 0.3
+        },
+        "quantity": 16,
+        "amount": 23136,
+        "description": ""
+      }
+    ],
+    "total": 25177,
+    "subTotal": 25177
+  },
+  "propertyAssessment": {
+    "assessmentLevel": 35,
+    "assessmentValue": 136579.52,
+    "totalArea": 92,
+    "marketValue": 392268.2,
+    "buildingCategory": "commercial",
+    "effectivityOfAssessment": {
+      "quarter": ""
+    },
+    "items": [
+      {
+        "id": "z17ob",
+        "area": 0,
+        "unitValue": 0,
+        "smv": 0,
+        "baseMarketValue": 0,
+        "depreciationPercentage": 0,
+        "depreciatorCost": 0,
+        "marketValue": 0,
+        "buildingCategory": ""
+      }
+    ]
+  },
+  "assessmentValue": 136579.52,
+  "buildingCategory": "commercial",
+  "taxableValue": ["on"],
+  "effectivityOfAssessment": "2021",
+  "assessmentLevel": 35,
+  "memoranda": [
+    {
+      "date": "2025-05-21",
+      "details": "REVISED PERSUANT TO SEC.219 OF RA 7160 AND AS IMPLEMENTED BY SP ORDINANCE NO. 716-2025 6TH GENERAL REVISION"
+    }
+  ],
+  "recordOfSupersededAssessment": {
+    "records": [
+      {
+        "pin": "erter",
+        "tdArpNo": "ert",
+        "totalAssessedValue": "23",
+        "previousOwner": "23",
+        "dateOfEffectivity": "2025-05-22",
+        "date": "2025-05-28",
+        "assessment": "2323",
+        "taxMapping": "3232",
+        "records": "2323"
+      }
+    ]
+  }
+}

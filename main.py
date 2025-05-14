@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from models import user_model as models
+
+from api import add_assessment_api, auth, property_assessment_api
 from database.database import engine
-from api import auth, property_assessment_api
+from models import user_model as models
 
 # Run migrations
 models.Base.metadata.create_all(bind=engine)
@@ -22,6 +23,7 @@ app.add_middleware(
 # Include routers
 app.include_router(auth.router)
 app.include_router(property_assessment_api.router)
+app.include_router(add_assessment_api.router, tags=["add_assessment"])
 
 
 # python -m uvicorn main:app --reload

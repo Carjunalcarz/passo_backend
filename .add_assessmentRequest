@@ -1,0 +1,59 @@
+### Base URL
+
+@baseUrl = http://localhost:8000
+
+### 1. Create a new assessment
+
+POST {{baseUrl}}/assessments/
+Content-Type: application/json
+
+{
+    "title": "2025 Property Assessment",
+    "description": "Annual property assessment for 2025",
+    "due_date": "2025-12-31T23:59:59",
+    "status": "pending",
+    "assigned_to": "John Doe"
+}
+
+### 2. Get all assessments (with pagination)
+GET {{baseUrl}}/assessments/?skip=0&limit=10
+
+### 3. Get specific assessment by ID
+GET {{baseUrl}}/assessments/1
+
+### 4. Update an assessment
+PUT {{baseUrl}}/assessments/1
+Content-Type: application/json
+
+{
+    "title": "Updated 2025 Property Assessment",
+    "description": "Updated annual property assessment for 2025",
+    "due_date": "2025-12-31T23:59:59",
+    "status": "in-progress",
+    "assigned_to": "Jane Doe"
+}
+
+### 5. Delete an assessment
+DELETE {{baseUrl}}/assessments/1
+
+### 6. Create a new property assessment
+POST {{baseUrl}}/property-assessments/
+Content-Type: application/json
+
+{
+    "tdn": "TDN-2025-001",
+    "market_val": 1000000.00,
+    "ass_value": 800000.00,
+    "sub_class": "Residential",
+    "eff_date": "2025-01-01T00:00:00",
+    "classification": "Residential",
+    "ass_level": 80.00,
+    "area": 150.00,
+    "taxability": "Taxable",
+    "gr_code": "GR001",
+    "gr": "General Revision 2025",
+    "mun_code": "MUN001",
+    "municipality": "Sample Municipality",
+    "barangay_code": "BRG001",
+    "barangay": "Sample Barangay"
+}
