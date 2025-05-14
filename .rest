@@ -62,7 +62,7 @@ Content-Type: application/json
 
 {
     "approval_section": {
-        "tdn": "TDN2024-22",
+        "tdn": "TDN2024-2ssd2sd",
         "appraisedBy": "John Doe",
         "appraisedDate": "2024-03-20",
         "recommendingApproval": "Jane Smith",
@@ -75,10 +75,10 @@ Content-Type: application/json
         "ownerAddress": "123 Main St, City",
         "admin_ben_user": "Admin User",
         "transactionCode": "TRANS002",
-        "pin": "1234567890",
-        "tin": "123-456-789",
-        "telNo": "+1234567890",
-        "td": "TD2024-00122222"
+        "pin": "1234567sds8sd90",
+        "tin": "123-456sdsdd-789",
+        "telNo": "+12345sd67890",
+        "td": "TD2024-0sd0122222"
     }
 }
 

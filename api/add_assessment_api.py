@@ -1,3 +1,4 @@
+"""API endpoints for managing property assessments and owner details in the Real Property Tax Assessment System."""
 from datetime import datetime
 from typing import Dict, List
 
@@ -12,26 +13,49 @@ from schemas.approvalSection_schema import ApprovalSection
 from schemas.ownerDetails_schema import OwnerDetails
 
 router = APIRouter()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 
 
 def get_current_user(
-    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
-):
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db),
+) -> str:
+    """Verify and return the current user from the JWT token.
+    
+    Args:
+        token: The JWT token to verify.
+        db: Database session.
+    
+    Returns:
+        str: The username from the token.
+        
+    Raises:
+        HTTPException: If the token is invalid.
+    """
     username = verify_token(token)
     if username is None:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise HTTPException(status_code=401, detail='Invalid token')
     return username
 
 
-@router.post("/add-assessments/", response_model=Dict)
+@router.post('/add-assessments/', response_model=Dict)
 async def create_property_assessment(
     approval_section: ApprovalSection,
     owner_details: OwnerDetails,
     db: Session = Depends(get_db),
-):
-    """
-    Create a new property assessment with approval section and owner details
+) -> Dict:
+    """Create a new property assessment with approval section and owner details.
+    
+    Args:
+        approval_section: The approval section details.
+        owner_details: The owner details.
+        db: Database session.
+    
+    Returns:
+        Dict containing the created assessment and owner details.
+    
+    Raises:
+        HTTPException: If creation fails or validation errors occur.
     """
     try:
         # First, create or get the owner
@@ -64,8 +88,8 @@ async def create_property_assessment(
                 raise HTTPException(
                     status_code=400,
                     detail={
-                        "message": "Failed to create owner details",
-                        "error": str(owner_error),
+                        'message': 'Failed to create owner details',
+                        'error': str(owner_error),
                     },
                 )
 
@@ -76,15 +100,15 @@ async def create_property_assessment(
                 tdn=approval_section.tdn,
                 appraisedBy=approval_section.appraisedBy,
                 appraisedDate=datetime.strptime(
-                    approval_section.appraisedDate, "%Y-%m-%d"
+                    approval_section.appraisedDate, '%Y-%m-%d'
                 ),
                 recommendingApproval=approval_section.recommendingApproval,
                 municipalityAssessorDate=datetime.strptime(
-                    approval_section.municipalityAssessorDate, "%Y-%m-%d"
+                    approval_section.municipalityAssessorDate, '%Y-%m-%d'
                 ),
                 approvedByProvince=approval_section.approvedByProvince,
                 provincialAssessorDate=datetime.strptime(
-                    approval_section.provincialAssessorDate, "%Y-%m-%d"
+                    approval_section.provincialAssessorDate, '%Y-%m-%d'
                 ),
             )
             db.add(assessment)
@@ -94,45 +118,45 @@ async def create_property_assessment(
             db.rollback()
             raise HTTPException(
                 status_code=400,
-                detail={"message": "Invalid date format", "error": str(date_error)},
+                detail={'message': 'Invalid date format', 'error': str(date_error)},
             )
         except Exception as assessment_error:
             db.rollback()
             raise HTTPException(
                 status_code=400,
                 detail={
-                    "message": "Failed to create assessment",
-                    "error": str(assessment_error),
+                    'message': 'Failed to create assessment',
+                    'error': str(assessment_error),
                 },
             )
 
         # Return the combined response
         response = {
-            "id": assessment.id,
-            "owner_id": owner.id,
-            "approval_section": {
-                "tdn": assessment.tdn,
-                "appraisedBy": assessment.appraisedBy,
-                "appraisedDate": assessment.appraisedDate.strftime("%Y-%m-%d"),
-                "recommendingApproval": assessment.recommendingApproval,
-                "municipalityAssessorDate": assessment.municipalityAssessorDate.strftime(
-                    "%Y-%m-%d"
+            'id': assessment.id,
+            'owner_id': owner.id,
+            'approval_section': {
+                'tdn': assessment.tdn,
+                'appraisedBy': assessment.appraisedBy,
+                'appraisedDate': assessment.appraisedDate.strftime('%Y-%m-%d'),
+                'recommendingApproval': assessment.recommendingApproval,
+                'municipalityAssessorDate': (
+                    assessment.municipalityAssessorDate.strftime('%Y-%m-%d')
                 ),
-                "approvedByProvince": assessment.approvedByProvince,
-                "provincialAssessorDate": assessment.provincialAssessorDate.strftime(
-                    "%Y-%m-%d"
+                'approvedByProvince': assessment.approvedByProvince,
+                'provincialAssessorDate': (
+                    assessment.provincialAssessorDate.strftime('%Y-%m-%d')
                 ),
             },
-            "owner_details": {
-                "id": owner.id,
-                "owner": owner.owner,
-                "ownerAddress": owner.ownerAddress,
-                "admin_ben_user": owner.admin_ben_user,
-                "transactionCode": owner.transactionCode,
-                "pin": owner.pin,
-                "tin": owner.tin,
-                "telNo": owner.telNo,
-                "td": owner.td,
+            'owner_details': {
+                'id': owner.id,
+                'owner': owner.owner,
+                'ownerAddress': owner.ownerAddress,
+                'admin_ben_user': owner.admin_ben_user,
+                'transactionCode': owner.transactionCode,
+                'pin': owner.pin,
+                'tin': owner.tin,
+                'telNo': owner.telNo,
+                'td': owner.td,
             },
         }
         return response
@@ -142,14 +166,19 @@ async def create_property_assessment(
         db.rollback()
         raise HTTPException(
             status_code=500,
-            detail={"message": "An unexpected error occurred", "error": str(e)},
+            detail={'message': 'An unexpected error occurred', 'error': str(e)},
         )
 
 
-@router.get("/owners/", response_model=List[OwnerDetails])
-async def get_all_owners(db: Session = Depends(get_db)):
-    """
-    Get all owners with their IDs in sequence
+@router.get('/owners/', response_model=List[OwnerDetails])
+async def get_all_owners(db: Session = Depends(get_db)) -> List[OwnerDetails]:
+    """Get all owners with their IDs in sequence.
+    
+    Args:
+        db: Database session.
+    
+    Returns:
+        List[OwnerDetails]: List of all owners ordered by ID.
     """
     owners = db.query(OwnerDetailsModel).order_by(OwnerDetailsModel.id).all()
     return owners
