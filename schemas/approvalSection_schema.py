@@ -12,28 +12,20 @@ class ApprovalSection(BaseModel):
     including all necessary dates and approver information.
     """
 
-    owner_id: Optional[int] = None
-    tdn: Optional[str] = None
-    appraised_by: Optional[str] = Field(None, alias="appraisedBy")
-    appraised_date: Optional[date] = Field(None, alias="appraisedDate")
-    recommending_approval: Optional[str] = Field(None, alias="recommendingApproval")
-    municipality_assessor_date: Optional[date] = Field(
-        None, alias="municipalityAssessorDate"
-    )
-    approved_by_province: Optional[str] = Field(None, alias="approvedByProvince")
-    provincial_assessor_date: Optional[date] = Field(
-        None, alias="provincialAssessorDate"
-    )
+    appraisedBy: Optional[str] = Field(None)
+    appraisedDate: Optional[date] = Field(None)
+    recommendingApproval: Optional[str] = Field(None)
+    municipalityAssessorDate: Optional[date] = Field(None)
+    approvedByProvince: Optional[str] = Field(None)
+    provincialAssessorDate: Optional[date] = Field(None)
 
     class Config:
         """Pydantic model configuration."""
 
-        orm_mode = True
+        from_attributes = True
         allow_population_by_field_name = True
         schema_extra = {
             "example": {
-                "owner_id": 1,
-                "tdn": "TDN123",
                 "appraisedBy": "John Smith",
                 "appraisedDate": "2024-03-20",
                 "recommendingApproval": "Jane Doe",

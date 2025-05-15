@@ -9,8 +9,7 @@ from sqlalchemy.orm import Session
 from authentication.user_auth import verify_token
 from database.database import get_db
 from models import ApprovalSectionModel, OwnerDetailsModel
-from schemas.approvalSection_schema import ApprovalSection
-from schemas.ownerDetails_schema import OwnerDetails
+from schemas.assessment_schemas import CompleteAssessmentRequest, OwnerDetails
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
@@ -38,130 +37,49 @@ def get_current_user(
     return username
 
 
-@router.post('/add-assessments/', response_model=Dict)
+@router.post('/add/', response_model=Dict)
 async def create_property_assessment(
-    approval_section: ApprovalSection,
-    owner_details: OwnerDetails,
+    request: CompleteAssessmentRequest,
     db: Session = Depends(get_db),
+    current_user: str = Depends(get_current_user),
 ) -> Dict:
-    """Create a new property assessment with approval section and owner details.
-    
-    Args:
-        approval_section: The approval section details.
-        owner_details: The owner details.
-        db: Database session.
-    
-    Returns:
-        Dict containing the created assessment and owner details.
-    
-    Raises:
-        HTTPException: If creation fails or validation errors occur.
-    """
     try:
-        # First, create or get the owner
-        owner = (
-            db.query(OwnerDetailsModel)
-            .filter(
-                (OwnerDetailsModel.pin == owner_details.pin)
-                | (OwnerDetailsModel.tin == owner_details.tin)
-            )
-            .first()
+        # Create owner details
+        owner = OwnerDetailsModel(
+            owner=request.ownerDetails.owner,
+            owner_address=request.ownerDetails.ownerAddress,
+            admin_ben_user=request.ownerDetails.admin_ben_user,
+            transaction_code=request.ownerDetails.transactionCode,
+            pin=request.ownerDetails.pin,
+            tin=request.ownerDetails.tin,
+            tel_no=request.ownerDetails.telNo,
+            td=request.ownerDetails.td,
         )
+        db.add(owner)
+        db.flush()
 
-        if not owner:
-            # Create new owner if doesn't exist
-            try:
-                owner = OwnerDetailsModel(
-                    owner=owner_details.owner,
-                    ownerAddress=owner_details.ownerAddress,
-                    admin_ben_user=owner_details.admin_ben_user,
-                    transactionCode=owner_details.transactionCode,
-                    pin=owner_details.pin,
-                    tin=owner_details.tin,
-                    telNo=owner_details.telNo,
-                    td=owner_details.td,
-                )
-                db.add(owner)
-                db.flush()  # This will generate the owner.id
-            except Exception as owner_error:
-                db.rollback()
-                raise HTTPException(
-                    status_code=400,
-                    detail={
-                        'message': 'Failed to create owner details',
-                        'error': str(owner_error),
-                    },
-                )
-
-        # Create the assessment with owner reference
-        try:
-            assessment = ApprovalSectionModel(
-                owner_id=owner.id,
-                tdn=approval_section.tdn,
-                appraisedBy=approval_section.appraisedBy,
-                appraisedDate=datetime.strptime(
-                    approval_section.appraisedDate, '%Y-%m-%d'
-                ),
-                recommendingApproval=approval_section.recommendingApproval,
-                municipalityAssessorDate=datetime.strptime(
-                    approval_section.municipalityAssessorDate, '%Y-%m-%d'
-                ),
-                approvedByProvince=approval_section.approvedByProvince,
-                provincialAssessorDate=datetime.strptime(
-                    approval_section.provincialAssessorDate, '%Y-%m-%d'
-                ),
-            )
-            db.add(assessment)
-            db.commit()
-            db.refresh(assessment)
-        except ValueError as date_error:
-            db.rollback()
-            raise HTTPException(
-                status_code=400,
-                detail={'message': 'Invalid date format', 'error': str(date_error)},
-            )
-        except Exception as assessment_error:
-            db.rollback()
-            raise HTTPException(
-                status_code=400,
-                detail={
-                    'message': 'Failed to create assessment',
-                    'error': str(assessment_error),
-                },
-            )
-
-        # Return the combined response
-        response = {
-            'id': assessment.id,
-            'owner_id': owner.id,
-            'approval_section': {
-                'tdn': assessment.tdn,
-                'appraisedBy': assessment.appraisedBy,
-                'appraisedDate': assessment.appraisedDate.strftime('%Y-%m-%d'),
-                'recommendingApproval': assessment.recommendingApproval,
-                'municipalityAssessorDate': (
-                    assessment.municipalityAssessorDate.strftime('%Y-%m-%d')
-                ),
-                'approvedByProvince': assessment.approvedByProvince,
-                'provincialAssessorDate': (
-                    assessment.provincialAssessorDate.strftime('%Y-%m-%d')
-                ),
-            },
-            'owner_details': {
-                'id': owner.id,
-                'owner': owner.owner,
-                'ownerAddress': owner.ownerAddress,
-                'admin_ben_user': owner.admin_ben_user,
-                'transactionCode': owner.transactionCode,
-                'pin': owner.pin,
-                'tin': owner.tin,
-                'telNo': owner.telNo,
-                'td': owner.td,
-            },
+        # Create approval section
+        assessment = ApprovalSectionModel(
+            owner_id=owner.id,
+            tdn=request.ownerDetails.td,
+            appraised_by=request.approvalSection.appraisedBy,
+            appraised_date=request.approvalSection.appraisedDate,
+            recommending_approval=request.approvalSection.recommendingApproval,
+            municipality_assessor_date=request.approvalSection.municipalityAssessorDate,
+            approved_by_province=request.approvalSection.approvedByProvince,
+            provincial_assessor_date=request.approvalSection.provincialAssessorDate,
+        )
+        db.add(assessment)
+        db.commit()
+        
+        return {
+            "status": "success",
+            "message": "Assessment created successfully",
+            "data": {
+                "assessment_id": assessment.id,
+                "owner_id": owner.id,
+            }
         }
-        return response
-    except HTTPException:
-        raise
     except Exception as e:
         db.rollback()
         raise HTTPException(
@@ -193,21 +111,21 @@ Authorization: Bearer your-token-here
 {
     "approval_section": {
         "tdn": "TDN2024-001",
-        "appraisedBy": "John Doe",
-        "appraisedDate": "2024-03-20",
-        "recommendingApproval": "Jane Smith",
-        "municipalityAssessorDate": "2024-03-21",
-        "approvedByProvince": "Robert Johnson",
-        "provincialAssessorDate": "2024-03-22"
+        "appraised_by": "John Doe",
+        "appraised_date": "2024-03-20",
+        "recommending_approval": "Jane Smith",
+        "municipality_assessor_date": "2024-03-21",
+        "approved_by_province": "Robert Johnson",
+        "provincial_assessor_date": "2024-03-22"
     },
     "owner_details": {
         "owner": "John Doe",
-        "ownerAddress": "123 Main St, City",
+        "owner_address": "123 Main St, City",
         "admin_ben_user": "Admin User",
-        "transactionCode": "TRANS001",
+        "transaction_code": "TRANS001",
         "pin": "1234567890",
         "tin": "123-456-789",
-        "telNo": "+1234567890",
+        "tel_no": "+1234567890",
         "td": "TD2024-001"
     }
 }

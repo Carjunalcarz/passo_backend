@@ -29,7 +29,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(
     add_assessment_api.router,
-    prefix='/api/v1',
+    prefix='/assessment',
     tags=['Assessment'],
 )
 

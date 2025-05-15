@@ -57,32 +57,127 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZ
 
 
 ### Add New Property Assessment
-POST {{baseUrl}}/add-assessments/
+### Add Property Assessment
+POST http://localhost:8000/assessment/add
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDcyOTIwMzR9.vVy7zk6k4GKcm8RwLdE9wL1gbh6h6lOjNRb2UOqaVXY
 
 {
-    "approval_section": {
-        "tdn": "TDN2024-2ssd2sd",
-        "appraisedBy": "John Doe",
-        "appraisedDate": "2024-03-20",
-        "recommendingApproval": "Jane Smith",
-        "municipalityAssessorDate": "2024-03-21",
-        "approvedByProvince": "Robert Johnson",
-        "provincialAssessorDate": "2024-03-22"
+  "approvalSection": {
+    "appraisedBy": "2323",
+    "appraisedDate": "2025-05-28",
+    "recommendingApproval": "2323",
+    "municipalityAssessorDate": "2025-05-30",
+    "approvedByProvince": "2323",
+    "provincialAssessorDate": "2025-05-30"
+  },
+  "street": "",
+  "ownerDetails": {
+    "owner": "John Doe",
+    "ownerAddress": "123 Main St",
+    "admin_ben_user": "Admin",
+    "transactionCode": "TRANS001",
+    "pin": "PIN12223",
+    "tin": "TIN45226",
+    "telNo": "555-0123",
+    "td": "TD2025-00221"
+  },
+  "landReference": {
+    "land_owner": "",
+    "block_no": "",
+    "tdn_no": "",
+    "pin": "",
+    "lot_no": "",
+    "survey_no": "",
+    "area": ""
+  },
+  "buildingLocation": {
+    "address_municipality": "Cabadbaran",
+    "address_barangay": "Bayabas",
+    "street": "",
+    "address_province": "Agusan del Norte"
+  },
+  "address_municipality": "Cabadbaran",
+  "address_barangay": "Bayabas",
+  "address_province": "Agusan del Norte",
+  "generalDescription": {
+    "building_permit_no": "32",
+    "certificate_of_completion_issued_on": "2025-05-20",
+    "certificate_of_occupancy_issued_on": "2025-05-22",
+    "date_of_occupied": "2025-05-22",
+    "bldg_age": "23",
+    "no_of_storeys": "2",
+    "area_of_1st_floor": "23",
+    "area_of_2nd_floor": "23",
+    "area_of_3rd_floor": "23",
+    "area_of_4th_floor": "23",
+    "total_floor_area": 92,
+    "kind_of_bldg": "IV-B",
+    "structural_type": "Restaurant",
+    "unitValue": 4820
+  },
+  "cct": {},
+  "floor_plan": [{}, {}, {}],
+  "structuralMaterial": {},
+  "truss_other": "",
+  "propertyAppraisal": {
+    "buildingType": "IV-B",
+    "buildingStructure": "Restaurant",
+    "totalArea": 92,
+    "unitValue": 4820,
+    "smv": 1,
+    "baseMarketValue": 443440,
+    "depreciation": 53212.8,
+    "marketValue": 390227.2
+  },
+  "additionalItem": "Carport",
+  "additionalItems": {
+    "items": [
+      {
+        "id": 1,
+        "label": "Flooring",
+        "value": {
+          "label": "Flooring",
+          "ratePerSqM": 157
+        },
+        "quantity": 13,
+        "amount": 2041,
+        "description": "23"
+      }
+    ],
+    "total": 25177,
+    "subTotal": 25177
+  },
+  "propertyAssessment": {
+    "assessmentLevel": 35,
+    "assessmentValue": 136579.52,
+    "totalArea": 92,
+    "marketValue": 392268.2,
+    "buildingCategory": "commercial",
+    "effectivityOfAssessment": {
+      "quarter": ""
     },
-    "owner_details": {
-        "owner": "John Doea",
-        "ownerAddress": "123 Main St, City",
-        "admin_ben_user": "Admin User",
-        "transactionCode": "TRANS002",
-        "pin": "1234567sds8sd90",
-        "tin": "123-456sdsdd-789",
-        "telNo": "+12345sd67890",
-        "td": "TD2024-0sd0122222"
+    "items": []
+  },
+  "assessmentValue": 136579.52,
+  "buildingCategory": "commercial",
+  "taxableValue": ["on"],
+  "effectivityOfAssessment": "2021",
+  "assessmentLevel": 35,
+  "memoranda": [
+    {
+      "date": "2025-05-21",
+      "details": "REVISED PERSUANT TO SEC.219 OF RA 7160"
     }
+  ],
+  "recordOfSupersededAssessment": {
+    "records": []
+  }
 }
 
-
+### Get All Owners
+GET http://localhost:8000/property-assessment/owners
+Authorization: Bearer your-token-here
 
 ####
 ##all values are required ##
