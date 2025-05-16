@@ -2,7 +2,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import add_assessment_api, auth, property_assessment_api
+from api import add_assessment_api, auth, get_assessment_api
 from database.database import engine
 from models import user_model as models
 
@@ -32,6 +32,10 @@ app.include_router(
     prefix='/assessment',
     tags=['Assessment'],
 )
-
+app.include_router(
+    get_assessment_api.router,
+    prefix='/assessment',
+    tags=['Assessment'],
+)
 # Note: Start the server with:
 # python -m uvicorn main:app --reload

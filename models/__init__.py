@@ -5,7 +5,34 @@ This package includes models for:
 - Approval Sections
 """
 
-from .ownerDetails_model import OwnerDetailsModel
-from .approvalSection_model import ApprovalSectionModel
+from models.assessment_model import (
+    ApprovalSectionModel, 
+    OwnerDetailsModel,
+    LandReferenceModel,
+    BuildingLocationModel,
+    GeneralDescriptionModel,
+    PropertyAppraisalModel,
+    AdditionalItemModel,
+    AdditionalItemsSummaryModel,
+    PropertyAssessmentItemModel,
+    MemorandumModel,
+    SupersededRecordModel,
+    StructuralMaterialModel,
+    BuildingAssessmentModel
+)
 
-__all__ = ['OwnerDetailsModel', 'ApprovalSectionModel']
+__all__ = [
+    "ApprovalSectionModel", 
+    "OwnerDetailsModel",
+    "LandReferenceModel",
+    "BuildingLocationModel",
+    "GeneralDescriptionModel",
+    "PropertyAppraisalModel",
+    "AdditionalItemModel",
+    "AdditionalItemsSummaryModel",
+    "PropertyAssessmentItemModel",
+    "MemorandumModel",
+    "SupersededRecordModel",
+    "StructuralMaterialModel",
+    "BuildingAssessmentModel"
+]
