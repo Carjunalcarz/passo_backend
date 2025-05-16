@@ -51,16 +51,16 @@ Content-Type: application/json
 DELETE http://localhost:8000/assessments/TEST123456782
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDU0NTkxOTd9.03S8P9czQfzI6DHh7L13UL9stzvx_nlaSWZPU3Jqbhw
 
-
-
-
-
+####
+# GET-assessment
+GET http://localhost:8000/assessment/get-assessment/11
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDczNzQwMDl9.yIHnDlf14mRb7M5bXpX2TRfvUfLhfqrXjwWp-8WnaCs
 
 ### Add New Property Assessment
 ### Add Property Assessment
 POST http://localhost:8000/assessment/add
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDcyOTIwMzR9.vVy7zk6k4GKcm8RwLdE9wL1gbh6h6lOjNRb2UOqaVXY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDczNjM5MzZ9.MgOgIzoLadBFKnzjZcs32BwtfGuXQiF1eRDV6R-jolg
 
 {
   "approvalSection": {
@@ -77,10 +77,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZ
     "ownerAddress": "123 Main St",
     "admin_ben_user": "Admin",
     "transactionCode": "TRANS001",
-    "pin": "PIN12223",
-    "tin": "TIN45226",
+    "pin": "PIN1223323",
+    "tin": "TIN4522336",
     "telNo": "555-0123",
-    "td": "TD2025-00221"
+    "td": "TD2025-0022331"
   },
   "landReference": {
     "land_owner": "",
@@ -149,15 +149,27 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZ
     "subTotal": 25177
   },
   "propertyAssessment": {
-    "assessmentLevel": 35,
-    "assessmentValue": 136579.52,
-    "totalArea": 92,
-    "marketValue": 392268.2,
+    "assessmentLevel": 30,
+    "assessmentValue": 87912,
+    "totalArea": 90,
+    "marketValue": 331335,
     "buildingCategory": "commercial",
     "effectivityOfAssessment": {
-      "quarter": ""
+      "quarter": "1"
     },
-    "items": []
+    "items": [
+      {
+        "id": "eciswl",
+        "area": 90,
+        "unitValue": 3700,
+        "smv": 1,
+        "baseMarketValue": 333000,
+        "depreciationPercentage": 12,
+        "depreciatorCost": 39960,
+        "marketValue": 293040,
+        "buildingCategory": "commercial"
+      }
+    ]
   },
   "assessmentValue": 136579.52,
   "buildingCategory": "commercial",
