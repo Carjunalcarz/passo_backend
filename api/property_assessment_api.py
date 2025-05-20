@@ -16,7 +16,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise HTTPException(status_code=401, detail="Invalid token")
     return username
 
-@router.get("/assessments", response_model=schemas.PaginatedAssessmentResponse)
+@router.get("/property-assessments", response_model=schemas.PaginatedAssessmentResponse)
 def get_assessments(
     skip: int = Query(0, ge=0),
     limit: int = Query(0, le=300000),

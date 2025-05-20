@@ -2,7 +2,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import add_assessment_api, auth, get_assessment_api
+from api import add_assessment_api, auth, get_assessment_api, property_assessment_api
 from database.database import engine
 from models import user_model as models
 
@@ -27,6 +27,13 @@ app.add_middleware(
 
 # Include routers
 app.include_router(auth.router)
+app.include_router(property_assessment_api.router)  
+
+# app.include_router(
+#     property_assessment_api.router,
+#     prefix='/municipality',
+#     tags=['Municipality'],
+# )
 app.include_router(
     add_assessment_api.router,
     prefix='/assessment',
