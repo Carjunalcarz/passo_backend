@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import and_
+from sqlalchemy import and_, func
 from database.database import get_db
 from models import property_assessment_model as models
 from schemas import property_assessment_schema as schemas
@@ -48,6 +48,8 @@ def get_assessments(
         "skip": skip,
         "limit": limit
     }
+
+
 
 @router.post("/assessments", response_model=schemas.PropertyAssessment)
 def create_assessment(
@@ -105,3 +107,161 @@ def delete_assessment(
     db.delete(db_assessment)
     db.commit()
     return {"message": "Assessment deleted successfully"}
+
+@router.get("/property-assessments/count/taxable")
+def count_taxable_assessments(
+    municipality: str | None = Query(None),
+    current_user: str = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    query = db.query(models.PropertyAssessmentClean).filter(
+        models.PropertyAssessmentClean.taxability == "TAXABLE"
+    )
+    
+    if municipality:
+        query = query.filter(
+            models.PropertyAssessmentClean.municipality.ilike(f"%{municipality}%")
+        )
+    
+    count = query.count()
+    print(f"Count of taxable assessments: {count}")
+    return {"count": count}
+
+@router.get("/property-assessments/count/exempt")
+def count_exempt_assessments(
+    municipality: str | None = Query(None),
+    current_user: str = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    query = db.query(models.PropertyAssessmentClean).filter(
+        models.PropertyAssessmentClean.taxability == "EXEMPT"
+    )
+    
+    if municipality:
+        query = query.filter(
+            models.PropertyAssessmentClean.municipality.ilike(f"%{municipality}%")
+        )
+    
+    count = query.count()
+    return {"count": count}
+
+@router.get("/property-assessments/market-value/taxable")
+def get_taxable_market_value(
+    municipality: str | None = Query(None),
+    current_user: str = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    query = db.query(
+        func.sum(models.PropertyAssessmentClean.market_val)
+    ).filter(
+        models.PropertyAssessmentClean.taxability == "TAXABLE"
+    )
+    
+    if municipality:
+        query = query.filter(
+            models.PropertyAssessmentClean.municipality.ilike(f"%{municipality}%")
+        )
+    
+    taxable_market_value = query.scalar()
+    return {"taxable_market_value": taxable_market_value or 0}
+
+@router.get("/property-assessments/market-value/exempt")
+def get_exempt_market_value(
+    municipality: str | None = Query(None),
+    current_user: str = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    query = db.query(
+        func.sum(models.PropertyAssessmentClean.market_val)
+    ).filter(
+        models.PropertyAssessmentClean.taxability == "EXEMPT"
+    )
+    
+    if municipality:
+        query = query.filter(
+            models.PropertyAssessmentClean.municipality.ilike(f"%{municipality}%")
+        )
+    
+    exempt_market_value = query.scalar()
+    return {"exempt_market_value": exempt_market_value or 0}
+
+@router.get("/property-assessments/assessment-value/taxable")
+def get_taxable_assessment_value(
+    municipality: str | None = Query(None),
+    current_user: str = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    query = db.query(
+        func.sum(models.PropertyAssessmentClean.ass_value)
+    ).filter(
+        models.PropertyAssessmentClean.taxability == "TAXABLE"
+    )
+    
+    if municipality:
+        query = query.filter(
+            models.PropertyAssessmentClean.municipality.ilike(f"%{municipality}%")
+        )
+    
+    taxable_assessment_value = query.scalar()
+    return {"taxable_assessment_value": taxable_assessment_value or 0}
+
+@router.get("/property-assessments/assessment-value/exempt")
+def get_exempt_assessment_value(
+    municipality: str | None = Query(None),
+    current_user: str = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    query = db.query(
+        func.sum(models.PropertyAssessmentClean.ass_value)
+    ).filter(
+        models.PropertyAssessmentClean.taxability == "EXEMPT"
+    )
+    
+    if municipality:
+        query = query.filter(
+            models.PropertyAssessmentClean.municipality.ilike(f"%{municipality}%")
+        )
+    
+    exempt_assessment_value = query.scalar()
+    return {"exempt_assessment_value": exempt_assessment_value or 0}
+
+@router.get("/property-assessments/area/taxable")
+def get_taxable_area(
+    municipality: str | None = Query(None),
+    current_user: str = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    query = db.query(
+        func.sum(models.PropertyAssessmentClean.area)
+    ).filter(
+        models.PropertyAssessmentClean.taxability == "TAXABLE"
+    )
+    
+    if municipality:
+        query = query.filter(
+            models.PropertyAssessmentClean.municipality.ilike(f"%{municipality}%")
+        )
+    
+    taxable_area = query.scalar()
+    return {"taxable_area": taxable_area or 0}
+
+@router.get("/property-assessments/area/exempt")
+def get_exempt_area(
+    municipality: str | None = Query(None),
+    current_user: str = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    query = db.query(
+        func.sum(models.PropertyAssessmentClean.area)
+    ).filter(
+        models.PropertyAssessmentClean.taxability == "EXEMPT"
+    )
+    
+    if municipality:
+        query = query.filter(
+            models.PropertyAssessmentClean.municipality.ilike(f"%{municipality}%")
+        )
+    
+    exempt_area = query.scalar()
+    return {"exempt_area": exempt_area or 0}
+            
