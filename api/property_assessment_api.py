@@ -51,7 +51,7 @@ def get_assessments(
 
 
 
-@router.post("/assessments", response_model=schemas.PropertyAssessment)
+@router.post("/property-assessments", response_model=schemas.PropertyAssessment)
 def create_assessment(
     assessment: schemas.PropertyAssessment,
     current_user: str = Depends(get_current_user),
@@ -75,7 +75,7 @@ def create_assessment(
     db.refresh(db_assessment)
     return db_assessment
 
-@router.put("/assessments/{tdn}", response_model=schemas.PropertyAssessment)
+@router.put("/property-assessments/{tdn}", response_model=schemas.PropertyAssessment)
 def update_assessment(
     tdn: str,
     assessment: schemas.PropertyAssessment,
@@ -94,7 +94,7 @@ def update_assessment(
     db.refresh(db_assessment)
     return db_assessment
 
-@router.delete("/assessments/{tdn}")
+@router.delete("/property-assessments/{tdn}")
 def delete_assessment(
     tdn: str,
     current_user: str = Depends(get_current_user),

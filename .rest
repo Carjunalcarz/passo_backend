@@ -32,8 +32,8 @@ GET http://localhost:8000/municipality?skip=0&limit=10
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDc3MjkzODB9.0gz5mZr5_x1ZXEUtdjRZT98w5LJx0_o3PiwDvEfaXGA
 Content-Type: application/json
 ###
-POST http://localhost:8000/municipality
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDU0ODUxMTJ9.pFMwQNcrUx8_dqSP7SQlRjLAg3UPnpdVRn2rM5mu3Co
+POST http://localhost:8000/property-assessments
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDc4ODMxNzB9.om-Eyna2frh6P_bWbto4LwT8f5Pxw14y2ew7N5p-_Sk
 Content-Type: application/json
 
 {
