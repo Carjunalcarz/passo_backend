@@ -6,6 +6,7 @@ from models import user_model as models
 from schemas import user_schema as schemas
 from authentication import user_auth as auth
 
+
 router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
