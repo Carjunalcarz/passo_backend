@@ -15,7 +15,7 @@ class PropertyAssessmentCreate(BaseModel):
     sub_class: str
     classification: str
     trans_cd: str
-    gr: str
+    gr: Optional[str] = None
     gr_code: str
     mun_code: str
     municipality: str
