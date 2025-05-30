@@ -8,11 +8,8 @@ username=admin@admin.com&password=ajncarz123
 
 ###
 
-GET http://localhost:8000/get-general-revision
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDgzOTM3MTB9.6vjaEjOpZf-ulZCcrkqG5yKNszwSh1INLvEdhvaHHv4
-
-
-
+GET http://localhost:8000/get-general-revision?skip-0&limit=300000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDg1NjcwMzF9.WsyVxFlX8gnXaZiOzERnUsOi9KOrBQkj5YiqRT5RbvQ
 ### Get Current User
 GET http://localhost:8000/users/me
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJham5jYXJ6IiwiZXhwIjoxNzQ1MzcxMTQ2fQ.2DPyFpE6RVS054O92GBIJHxoVXETk1K9nrdWr7E6aiI
