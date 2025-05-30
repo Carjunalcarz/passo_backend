@@ -17,10 +17,10 @@ class PropertyAssessmentCreate(BaseModel):
     trans_cd: str
     gr: Optional[str] = None
     gr_code: str
-    mun_code: str
-    municipality: str
-    b_code: str
-    barangay: str
+    mun_code: Optional[str] = None
+    municipality: Optional[str] = None
+    b_code: Optional[str] = None
+    barangay: Optional[str] = None
     date_input: datetime
     inputed_by: str
 
