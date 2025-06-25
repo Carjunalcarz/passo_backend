@@ -57,8 +57,8 @@ Content-Type: application/json
 ###
 
 # Delete an assessment
-DELETE http://localhost:8000/assessments/TEST123456782
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDU0NTkxOTd9.03S8P9czQfzI6DHh7L13UL9stzvx_nlaSWZPU3Jqbhw
+DELETE http://localhost:8000/property-assessments/22/03/2000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDc4ODM0OTB9.mjq2YDjFU4wxkgKCDR9Qv0JSStvcui7fWG_vLhZs9MU
 
 ####
 # GET-assessment
