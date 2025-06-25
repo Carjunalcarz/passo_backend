@@ -1,7 +1,9 @@
-from pydantic import BaseModel
 from datetime import date
-from typing import Optional
-from typing import List
+from typing import List, Optional
+
+from pydantic import BaseModel
+
+
 class PropertyAssessment(BaseModel):
     tdn: str
     market_val: Optional[float]
@@ -21,6 +23,8 @@ class PropertyAssessment(BaseModel):
 
     class Config:
         from_attributes = True
+
+
 class PaginatedAssessmentResponse(BaseModel):
     data: List[PropertyAssessment]
     total: int

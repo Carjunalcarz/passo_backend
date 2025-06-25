@@ -8,6 +8,8 @@ username=admin@admin.com&password=ajncarz123
 
 ###
 
+GET http://localhost:8000/get-general-revision?skip-0&limit=300000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDg1NjcwMzF9.WsyVxFlX8gnXaZiOzERnUsOi9KOrBQkj5YiqRT5RbvQ
 ### Get Current User
 GET http://localhost:8000/users/me
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJham5jYXJ6IiwiZXhwIjoxNzQ1MzcxMTQ2fQ.2DPyFpE6RVS054O92GBIJHxoVXETk1K9nrdWr7E6aiI
@@ -53,6 +55,36 @@ Content-Type: application/json
     "barangay_code": "B001",
     "barangay": "Sample Barangay"
 }
+
+### Create General Revision
+POST http://localhost:8000/create-general-revision
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDgyNDY4MzN9.A8NrO3fvOKDKsIdFbGyW74TVp-v_-yMgEgZC_RCMUew
+Content-Type: application/json
+
+{
+  "pin": "1234567890",
+  "name": "John Doe",
+  "tdn": "TDN001",
+  "market_val": 1000000,
+  "ass_value": 700000,
+  "area": 150.0,
+  "taxability": "Taxable",
+  "sub_class": "Residential",
+  "classification": "R1",
+  "trans_cd": "TX001",
+  "gr": "2025",
+  "gr_code": "GR01",
+  "mun_code": "001",
+  "municipality": "LAS NIEVES",
+  "b_code": "B01",
+  "barangay": "Barangay1",
+  "date_input": "2025-05-26",
+  "inputed_by": "admin"
+
+
+}
+
+
 
 ###
 
