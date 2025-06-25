@@ -8,23 +8,34 @@ username=admin@admin.com&password=ajncarz123
 
 ###
 
+GET http://localhost:8000/get-general-revision?skip-0&limit=300000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDg1NjcwMzF9.WsyVxFlX8gnXaZiOzERnUsOi9KOrBQkj5YiqRT5RbvQ
 ### Get Current User
 GET http://localhost:8000/users/me
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJham5jYXJ6IiwiZXhwIjoxNzQ1MzcxMTQ2fQ.2DPyFpE6RVS054O92GBIJHxoVXETk1K9nrdWr7E6aiI
 
 ###
 
-GET http://localhost:8000/assessments?skip=0&limit=10
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDUzODkyNDd9.Zd58h3tXxLwSENFW2z0xmOGz7PUoY_9LRUJ-AwPltUY
-
+GET http://localhost:8000/assessmentv2/property-assessments?skip=0&limit=10
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDc3Mjg4OTB9.awkAJGRNUe8BXMBIe5UGBwXGwMnPec2f7kOLvnWuifw
 ###
-
-GET http://localhost:8000/assessments?municipality=CARMEN&barangay=TAGCATONG&limit=100
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJham5jYXJ6IiwiZXhwIjoxNzQ1MzcxMTQ2fQ.2DPyFpE6RVS054O92GBIJHxoVXETk1K9nrdWr7E6aiI
+GET http://localhost:8000/municipality/property-assessments
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDc3Mjg4OTB9.awkAJGRNUe8BXMBIe5UGBwXGwMnPec2f7kOLvnWuifw
+Content-Type: application/json
 ###
+GET http://localhost:8000/property-assessments?municipality=CARMEN&barangay=TAGCATONG&limit=100
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDc3MjkzODB9.0gz5mZr5_x1ZXEUtdjRZT98w5LJx0_o3PiwDvEfaXGA
 
-POST http://localhost:8000/assessments
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDU0ODUxMTJ9.pFMwQNcrUx8_dqSP7SQlRjLAg3UPnpdVRn2rM5mu3Co
+
+
+####
+### Get property assessments with proper pagination
+GET http://localhost:8000/municipality?skip=0&limit=10
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDc3MjkzODB9.0gz5mZr5_x1ZXEUtdjRZT98w5LJx0_o3PiwDvEfaXGA
+Content-Type: application/json
+###
+POST http://localhost:8000/property-assessments
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDc4ODMxNzB9.om-Eyna2frh6P_bWbto4LwT8f5Pxw14y2ew7N5p-_Sk
 Content-Type: application/json
 
 {
@@ -45,16 +56,46 @@ Content-Type: application/json
     "barangay": "Sample Barangay"
 }
 
+### Create General Revision
+POST http://localhost:8000/create-general-revision
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDgyNDY4MzN9.A8NrO3fvOKDKsIdFbGyW74TVp-v_-yMgEgZC_RCMUew
+Content-Type: application/json
+
+{
+  "pin": "1234567890",
+  "name": "John Doe",
+  "tdn": "TDN001",
+  "market_val": 1000000,
+  "ass_value": 700000,
+  "area": 150.0,
+  "taxability": "Taxable",
+  "sub_class": "Residential",
+  "classification": "R1",
+  "trans_cd": "TX001",
+  "gr": "2025",
+  "gr_code": "GR01",
+  "mun_code": "001",
+  "municipality": "LAS NIEVES",
+  "b_code": "B01",
+  "barangay": "Barangay1",
+  "date_input": "2025-05-26",
+  "inputed_by": "admin"
+
+
+}
+
+
+
 ###
 
 # Delete an assessment
-DELETE http://localhost:8000/assessments/TEST123456782
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDU0NTkxOTd9.03S8P9czQfzI6DHh7L13UL9stzvx_nlaSWZPU3Jqbhw
+DELETE http://localhost:8000/property-assessments/22/03/2000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDc4ODM0OTB9.mjq2YDjFU4wxkgKCDR9Qv0JSStvcui7fWG_vLhZs9MU
 
 ####
 # GET-assessment
-GET http://localhost:8000/assessment/get-assessment/11
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDczNzQwMDl9.yIHnDlf14mRb7M5bXpX2TRfvUfLhfqrXjwWp-8WnaCs
+GET http://localhost:8000/assessment/get-assessment/13
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDc3MDU1MzB9.3SzAWTzh0w9N86fjuL6bp_3uXSR7eUpmIYh6-DW7-jQ
 
 ### Add New Property Assessment
 ### Add Property Assessment
