@@ -126,6 +126,7 @@ def delete_assessment(
 
 
 @router.get("/property-assessments/count/taxable")
+
 def count_taxable_assessments(
     municipality: str | None = Query(None),
     current_user: str = Depends(get_current_user),
@@ -139,8 +140,7 @@ def count_taxable_assessments(
         query = query.filter(
             models.GeneralRevisionModel.municipality.ilike(f"%{municipality}%")
         )
-
-    count = query.count()
+    count = query.with_entities(func.count(func.distinct(models.GeneralRevisionModel.tdn))).scalar()
     print(f"Count of taxable assessments: {count}")
     return {"count": count}
 
@@ -160,7 +160,7 @@ def count_exempt_assessments(
             models.GeneralRevisionModel.municipality.ilike(f"%{municipality}%")
         )
 
-    count = query.count()
+    count = query.with_entities(func.count(func.distinct(models.GeneralRevisionModel.tdn))).scalar()
     return {"count": count}
 
 

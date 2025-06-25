@@ -58,7 +58,8 @@ def get_assessments(
     if filters:
         query = query.filter(and_(*filters))
 
-    total = query.count()
+    total = query.with_entities(func.count(func.distinct(general_revision_model.GeneralRevisionModel.tdn))).scalar()
+
     sum_market_val = query.with_entities(
         func.sum(general_revision_model.GeneralRevisionModel.market_val)
     ).scalar()
