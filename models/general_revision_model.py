@@ -8,7 +8,7 @@ Base = declarative_base()
 
 
 class GeneralRevisionModel(Base):
-    __tablename__ = "general_revision"
+    __tablename__ = "sta_yr_general_revision"
     __table_args__ = {"schema": "Assessor2025"}
 
     id = Column(Integer, primary_key=True, index=True)
@@ -34,7 +34,7 @@ class GeneralRevisionModel(Base):
     gr_code = Column(String(20), nullable=True, comment="Geographical Region Code")
     mun_code = Column(String(20), nullable=True, comment="Municipality Code")
     municipality = Column(String(100), nullable=True, comment="Municipality Name")
-    b_code = Column(String(20), nullable=True, comment="Barangay Code")
+    bcode = Column(String(20), nullable=True, comment="Barangay Code")
     barangay = Column(String(100), nullable=True, comment="Barangay Name")
     date_input = Column(DateTime, default=func.now(), comment="Date of Input")
     inputed_by = Column(String(100), nullable=True, comment="Input By User")
