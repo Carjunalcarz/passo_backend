@@ -141,6 +141,8 @@ async def get_all_assessments(
                         "address_barangay": location.address_barangay,
                         "street": location.street,
                         "address_province": location.address_province,
+                        "bcode": location.bcode,
+                        "mun_code": location.mun_code,
                     }
 
                 # Get general description
@@ -254,15 +256,14 @@ async def get_all_assessments(
                     assess_items_data.append(
                         {
                             "id": item.id,
-                            "item_id": item.item_id,
-                            "area": item.area,
-                            "unit_value": item.unit_value,
-                            "smv": item.smv,
-                            "base_market_value": item.base_market_value,
-                            "depreciation_percentage": item.depreciation_percentage,
-                            "depreciator_cost": item.depreciator_cost,
                             "market_value": item.market_value,
                             "building_category": item.building_category,
+                            "assessment_level": item.assessment_level,
+                            "assessment_value": item.assessment_value,
+                            "taxable": item.taxable,
+                            "eff_year": item.eff_year,
+                            "eff_quarter": item.eff_quarter,
+                            "total_area": item.total_area,
                         }
                     )
 
@@ -452,6 +453,8 @@ async def get_assessment_by_owner_id(
                     "address_barangay": location.address_barangay,
                     "street": location.street,
                     "address_province": location.address_province,
+                    "bcode": location.bcode,
+                    "mun_code": location.mun_code,
                 }
 
             # Get general description
@@ -565,15 +568,14 @@ async def get_assessment_by_owner_id(
                 assess_items_data.append(
                     {
                         "id": item.id,
-                        "item_id": item.item_id,
-                        "area": item.area,
-                        "unit_value": item.unit_value,
-                        "smv": item.smv,
-                        "base_market_value": item.base_market_value,
-                        "depreciation_percentage": item.depreciation_percentage,
-                        "depreciator_cost": item.depreciator_cost,
                         "market_value": item.market_value,
                         "building_category": item.building_category,
+                        "assessment_level": item.assessment_level,
+                        "assessment_value": item.assessment_value,
+                        "taxable": item.taxable,
+                        "eff_year": item.eff_year,
+                        "eff_quarter": item.eff_quarter,
+                        "total_area": item.total_area,
                     }
                 )
 

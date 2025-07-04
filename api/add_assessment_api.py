@@ -53,6 +53,7 @@ async def create_flexible_assessment(
     
     try:
         # 1. Create owner details
+        td_value = request.get("ownerDetails", {}).get("td")
         owner = OwnerDetailsModel(
             owner=request.get("ownerDetails", {}).get("owner"),
             owner_address=request.get("ownerDetails", {}).get("ownerAddress"),
@@ -61,10 +62,18 @@ async def create_flexible_assessment(
             pin=request.get("ownerDetails", {}).get("pin"),
             tin=request.get("ownerDetails", {}).get("tin"),
             tel_no=request.get("ownerDetails", {}).get("telNo"),
-            td=request.get("ownerDetails", {}).get("td")
+            td=td_value  # Temporary, will update after flush
         )
         db.add(owner)
-        db.flush()
+        db.flush()  # Now owner.id is available
+
+        # Replace last digit of td_value with owner.id
+        if td_value and owner.id is not None:
+            # If td_value is a string and owner.id is an int
+            td_new = td_value[:-1] +"-"+ str(owner.id)
+            owner.td = td_new
+            db.flush()  # Update the value in the database
+
         created_ids["owner_id"] = owner.id
         print(f"Created owner with ID: {owner.id}")
         
@@ -115,6 +124,14 @@ async def create_flexible_assessment(
         
         try:
             # 4. Create building assessment
+            # Convert effectivity_of_assessment dict to string if it's a dict
+            effectivity_data = request.get("effectivityOfAssessment", "")
+            if isinstance(effectivity_data, dict):
+                # Convert dict to a readable string format
+                effectivity_str = f"{effectivity_data.get('quarter', '')} {effectivity_data.get('year', '')}".strip()
+            else:
+                effectivity_str = str(effectivity_data) if effectivity_data else ""
+
             assessment = BuildingAssessmentModel(
                 owner_id=owner.id,
                 street=request.get("street", ""),
@@ -124,7 +141,7 @@ async def create_flexible_assessment(
                 assessment_value=request.get("propertyAppraisal", {}).get("marketValue", 0) * 0.5,
                 building_category=request.get("propertyAppraisal", {}).get("buildingType", ""),
                 taxable_value=request.get("taxableValue", []),
-                effectivity_of_assessment=request.get("effectivityOfAssessment", ""),
+                effectivity_of_assessment=effectivity_str,  # Use the converted string
                 assessment_level=request.get("assessmentLevel", 0.0),
                 cct=request.get("cct", {}),
                 floor_plan=request.get("floor_plan", []),
@@ -142,7 +159,9 @@ async def create_flexible_assessment(
                     address_municipality=request.get("buildingLocation", {}).get("address_municipality", ""),
                     address_barangay=request.get("buildingLocation", {}).get("address_barangay", ""),
                     street=request.get("buildingLocation", {}).get("street", ""),
-                    address_province=request.get("buildingLocation", {}).get("address_province", "")
+                    address_province=request.get("buildingLocation", {}).get("address_province", ""),
+                    bcode=request.get("buildingLocation", {}).get("bcode", ""),
+                    mun_code=request.get("buildingLocation", {}).get("mun_code", "")
                 )
                 db.add(location)
                 db.flush()
@@ -253,17 +272,24 @@ async def create_flexible_assessment(
             try:
                 # If propertyAssessment is missing, create a default entry
                 if "propertyAssessment" not in request or "items" not in request.get("propertyAssessment", {}):
+                    # Convert effectivity_of_assessment dict to string if it's a dict
+                    effectivity_data = request.get("propertyAssessment", {}).get("effectivityOfAssessment", "")
+                    if isinstance(effectivity_data, dict):
+                        # Convert dict to a readable string format
+                        effectivity_str = f"{effectivity_data.get('quarter', '')} {effectivity_data.get('year', '')}".strip()
+                    else:
+                        effectivity_str = str(effectivity_data) if effectivity_data else ""
+                        
                     assess_item = PropertyAssessmentItemModel(
                         assessment_id=assessment.id,
-                        item_id="default",
-                        area=request.get("propertyAppraisal", {}).get("totalArea", 0),
-                        unit_value=request.get("propertyAppraisal", {}).get("unitValue", 0),
-                        smv=request.get("propertyAppraisal", {}).get("smv", 0),
-                        base_market_value=request.get("propertyAppraisal", {}).get("baseMarketValue", 0),
-                        depreciation_percentage=0,
-                        depreciator_cost=0,
-                        market_value=request.get("propertyAppraisal", {}).get("marketValue", 0),
-                        building_category=request.get("propertyAppraisal", {}).get("buildingType", "")
+                        assessment_level=request.get("propertyAssessment", {}).get("assessment_level", ""),
+                        assessment_value=request.get("propertyAssessment", {}).get("assessment_value", 0),
+                        total_area=request.get("propertyAssessment", {}).get("total_area", 0),
+                        market_value=request.get("propertyAssessment", {}).get("market_value", 0),
+                        building_category=request.get("propertyAssessment", {}).get("building_category", ""),
+                        taxable=1 if request.get("propertyAssessment", {}).get("taxable", False) else 0,
+                        eff_year=request.get("propertyAssessment", {}).get("eff_year", ""),
+                        eff_quarter=request.get("propertyAssessment", {}).get("eff_quarter", "")
                     )
                     db.add(assess_item)
                     db.flush()

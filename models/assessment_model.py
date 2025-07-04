@@ -1,4 +1,4 @@
-from sqlalchemy import JSON, Column, Date, Float, ForeignKey, Integer, String
+from sqlalchemy import JSON, Boolean, Column, Date, Float, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -79,6 +79,8 @@ class BuildingLocationModel(Base):
     address_barangay = Column(String)
     street = Column(String)
     address_province = Column(String)
+    bcode = Column(String)
+    mun_code = Column(String)
 
     # Relationships
     assessment = relationship("BuildingAssessmentModel", back_populates="location")
@@ -168,16 +170,15 @@ class PropertyAssessmentItemModel(Base):
     __table_args__ = {"schema": "Assessor2025"}
     id = Column(Integer, primary_key=True, index=True)
     assessment_id = Column(Integer, ForeignKey("Assessor2025.building_assessment.id"))
-    item_id = Column(String)
-    area = Column(Float)
-    unit_value = Column(Float)
-    smv = Column(Float)
-    base_market_value = Column(Float)
-    depreciation_percentage = Column(Float)
-    depreciator_cost = Column(Float)
-    market_value = Column(Float)
+    assessment_level = Column(String)
+    assessment_value = Column(Float)
     building_category = Column(String)
-
+    taxable = Column(Integer) # 1 for true, 0 for false
+    eff_year = Column(String)
+    eff_quarter = Column(String)
+    market_value = Column(Float)
+    total_area = Column(Float)
+    
     # Relationships
     assessment = relationship(
         "BuildingAssessmentModel", back_populates="assessment_items"

@@ -94,8 +94,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZ
 
 ####
 # GET-assessment
-GET http://localhost:8000/assessment/get-assessment/13
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDc3MDU1MzB9.3SzAWTzh0w9N86fjuL6bp_3uXSR7eUpmIYh6-DW7-jQ
+GET http://localhost:8000/assessment/get-assessment/37
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NTE0NDE1MTl9.flSaia8x12XhIx3oWschFbLTOR5Np3poeY-rVNil4Os
 
 ### Add New Property Assessment
 ### Add Property Assessment
