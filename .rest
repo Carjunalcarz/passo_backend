@@ -34,8 +34,8 @@ GET http://localhost:8000/municipality?skip=0&limit=10
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDc3MjkzODB9.0gz5mZr5_x1ZXEUtdjRZT98w5LJx0_o3PiwDvEfaXGA
 Content-Type: application/json
 ###
-POST http://localhost:8000/property-assessments
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDc4ODMxNzB9.om-Eyna2frh6P_bWbto4LwT8f5Pxw14y2ew7N5p-_Sk
+POST http://localhost:8000/property-assessment/79
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NTE1OTYyOTF9.NZ66EQqxm59CZkJAdYCvhOVue62ggaqOAXb2wKe8WaA
 Content-Type: application/json
 
 {
@@ -94,8 +94,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZ
 
 ####
 # GET-assessment
-GET http://localhost:8000/assessment/get-assessment/37
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NTE0NDE1MTl9.flSaia8x12XhIx3oWschFbLTOR5Np3poeY-rVNil4Os
+GET http://localhost:8000/assessment/get-assessment/94
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NTE4NjgzMzN9.2V8HuhG8ZhjNFz9_c_bQjwXptZd8jbo-eNgmCDyfV9s
 
 ### Add New Property Assessment
 ### Add Property Assessment

@@ -18,6 +18,7 @@ class OwnerDetails(BaseModel):
     owner: Optional[str] = Field(None)
     owner_address: Optional[str] = Field(None, alias="ownerAddress")
     admin_ben_user: Optional[str] = Field(None, alias="admin_ben_user")
+    admin_ben_user_address: Optional[str] = Field(None, alias="adminBenUserAddress")
     transaction_code: Optional[str] = Field(None, alias="transactionCode")
     pin: Optional[str] = Field(None)
     tin: Optional[str] = Field(None)

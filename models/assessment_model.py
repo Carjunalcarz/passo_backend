@@ -15,6 +15,7 @@ class OwnerDetailsModel(Base):
     owner = Column(String)
     owner_address = Column(String)
     admin_ben_user = Column(String)
+    admin_ben_user_address = Column(String)
     transaction_code = Column(String)
     pin = Column(String)
     tin = Column(String)

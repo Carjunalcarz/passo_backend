@@ -58,6 +58,7 @@ async def create_flexible_assessment(
             owner=request.get("ownerDetails", {}).get("owner"),
             owner_address=request.get("ownerDetails", {}).get("ownerAddress"),
             admin_ben_user=request.get("ownerDetails", {}).get("admin_ben_user"),
+            admin_ben_user_address=request.get("ownerDetails", {}).get("admin_ben_user_address"),
             transaction_code=request.get("ownerDetails", {}).get("transactionCode"),
             pin=request.get("ownerDetails", {}).get("pin"),
             tin=request.get("ownerDetails", {}).get("tin"),
