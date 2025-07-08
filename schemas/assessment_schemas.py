@@ -45,7 +45,7 @@ class LandReference(BaseModel):
 class BuildingLocation(BaseModel):
     address_municipality: Optional[str] = Field(None, alias="addressMunicipality")
     address_barangay: Optional[str] = Field(None, alias="addressBarangay")
-    street: Optional[str] = Field(None)
+    street: Optional[str] = Field(None, alias="street")
     address_province: Optional[str] = Field(None, alias="addressProvince")
     bcode: Optional[str] = Field(None)
     mun_code: Optional[str] = Field(None, alias="munCode")
@@ -153,6 +153,7 @@ class Memorandum(BaseModel):
     details: str
 
 class SupersededRecord(BaseModel):
+    id: int
     pin: str
     td_arp_no: str = Field(alias="tdArpNo")
     total_assessed_value: str = Field(alias="totalAssessedValue")

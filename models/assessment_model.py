@@ -27,7 +27,7 @@ class OwnerDetailsModel(Base):
         "ApprovalSectionModel", back_populates="owner", uselist=False
     )
     land_reference = relationship(
-        "LandReferenceModel", back_populates="owner", uselist=False
+        "LandReferenceModel", back_populates="owner", uselist=False, lazy="joined"
     )
     building_assessment = relationship(
         "BuildingAssessmentModel", back_populates="owner", uselist=False
@@ -57,7 +57,7 @@ class LandReferenceModel(Base):
     __table_args__ = {"schema": "Assessor2025"}
 
     id = Column(Integer, primary_key=True, index=True)
-    owner_id = Column(Integer, ForeignKey("Assessor2025.owner_details.id"))
+    owner_id = Column(Integer, ForeignKey("Assessor2025.owner_details.id", ondelete="CASCADE"), nullable=True)
     land_owner = Column(String)
     block_no = Column(String)
     tdn_no = Column(String)
@@ -67,7 +67,7 @@ class LandReferenceModel(Base):
     area = Column(String)
 
     # Relationships
-    owner = relationship("OwnerDetailsModel", back_populates="land_reference")
+    owner = relationship("OwnerDetailsModel", back_populates="land_reference", lazy="joined")
 
 
 class BuildingLocationModel(Base):

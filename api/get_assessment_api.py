@@ -4,7 +4,7 @@ from typing import Dict, List
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from authentication.user_auth import verify_token
 from database.database import get_db
@@ -62,7 +62,11 @@ async def get_all_assessments(
     """
     try:
         # Query for all owners (starting point)
-        owners = db.query(OwnerDetailsModel).all()
+        owners = (
+            db.query(OwnerDetailsModel)
+            .options(joinedload(OwnerDetailsModel.land_reference))
+            .all()
+        )
 
         result = []
         for owner in owners:
@@ -105,25 +109,42 @@ async def get_all_assessments(
                     "provincial_assessor_date": approval.provincial_assessor_date,
                 }
 
-            # Get land reference
+            # Get the latest non-empty land reference
             land_ref = (
                 db.query(LandReferenceModel)
-                .filter(LandReferenceModel.owner_id == owner.id)
+                .filter(
+                    LandReferenceModel.owner_id == owner.id,
+                    LandReferenceModel.land_owner.isnot(None),
+                    LandReferenceModel.land_owner != ''
+                )
+                .order_by(LandReferenceModel.id.desc())
                 .first()
             )
-
+            
             land_data = None
             if land_ref:
                 land_data = {
                     "id": land_ref.id,
-                    "land_owner": land_ref.land_owner,
-                    "block_no": land_ref.block_no,
-                    "tdn_no": land_ref.tdn_no,
-                    "pin": land_ref.pin,
-                    "lot_no": land_ref.lot_no,
-                    "survey_no": land_ref.survey_no,
-                    "area": land_ref.area,
+                    "land_owner": land_ref.land_owner or "",
+                    "block_no": land_ref.block_no or "",
+                    "tdn_no": land_ref.tdn_no or "",
+                    "pin": land_ref.pin or "",
+                    "lot_no": land_ref.lot_no or "",
+                    "survey_no": land_ref.survey_no or "",
+                    "area": land_ref.area or ""
                 }
+            else:
+                land_data = {
+                    "id": None,
+                    "land_owner": "",
+                    "block_no": "",
+                    "tdn_no": "",
+                    "pin": "",
+                    "lot_no": "",
+                    "survey_no": "",
+                    "area": ""
+                }
+            print("=== END DEBUG ===\n")
 
             assessment_data = None
             if assessment:
@@ -294,13 +315,13 @@ async def get_all_assessments(
                         {
                             "id": record.id,
                             "pin": record.pin,
-                            "td_arp_no": record.td_arp_no,
-                            "total_assessed_value": record.total_assessed_value,
-                            "previous_owner": record.previous_owner,
-                            "date_of_effectivity": record.date_of_effectivity,
-                            "record_date": record.record_date,
+                            "tdArpNo": record.td_arp_no,
+                            "totalAssessedValue": record.total_assessed_value,
+                            "previousOwner": record.previous_owner,
+                            "dateOfEffectivity": record.date_of_effectivity,
+                            "date": record.record_date,
                             "assessment": record.assessment,
-                            "tax_mapping": record.tax_mapping,
+                            "taxMapping": record.tax_mapping,
                             "records": record.records,
                         }
                     )
@@ -320,7 +341,15 @@ async def get_all_assessments(
                     "cct": assessment.cct,
                     "floor_plan": assessment.floor_plan,
                     "additional_item": assessment.additional_item,
-                    "building_location": location_data,
+                    "building_location": location_data if location else {
+                        "id": None,
+                        "address_municipality": assessment.address_municipality,
+                        "address_barangay": assessment.address_barangay,
+                        "street": assessment.street,
+                        "address_province": assessment.address_province,
+                        "bcode": None,
+                        "mun_code": None
+                    },
                     "general_description": gen_desc_data,
                     "property_appraisal": appraisal_data,
                     "structural_material": struct_material_data,
@@ -328,7 +357,9 @@ async def get_all_assessments(
                     "additional_items_summary": add_summary_data,
                     "property_assessment_items": assess_items_data,
                     "memoranda": memoranda_data,
-                    "superseded_records": superseded_data,
+                    "recordOfSupersededAssessment": {
+                        "records": superseded_data
+                    },
                 }
 
             # Build the complete assessment record
@@ -371,7 +402,10 @@ async def get_assessment_by_owner_id(
     try:
         # Get the owner
         owner = (
-            db.query(OwnerDetailsModel).filter(OwnerDetailsModel.id == owner_id).first()
+            db.query(OwnerDetailsModel)
+            .filter(OwnerDetailsModel.id == owner_id)
+            .options(joinedload(OwnerDetailsModel.land_reference))
+            .first()
         )
 
         if not owner:
@@ -411,24 +445,41 @@ async def get_assessment_by_owner_id(
                 "provincial_assessor_date": approval.provincial_assessor_date,
             }
 
-        # Get land reference
+        # Get land reference using direct query to debug
+        # Get the latest non-empty land reference
         land_ref = (
             db.query(LandReferenceModel)
-            .filter(LandReferenceModel.owner_id == owner.id)
+            .filter(
+                LandReferenceModel.owner_id == owner.id,
+                LandReferenceModel.land_owner.isnot(None),
+                LandReferenceModel.land_owner != ''
+            )
+            .order_by(LandReferenceModel.id.desc())
             .first()
         )
-
+        
         land_data = None
         if land_ref:
             land_data = {
                 "id": land_ref.id,
-                "land_owner": land_ref.land_owner,
-                "block_no": land_ref.block_no,
-                "tdn_no": land_ref.tdn_no,
-                "pin": land_ref.pin,
-                "lot_no": land_ref.lot_no,
-                "survey_no": land_ref.survey_no,
-                "area": land_ref.area,
+                "land_owner": land_ref.land_owner or "",
+                "block_no": land_ref.block_no or "",
+                "tdn_no": land_ref.tdn_no or "",
+                "pin": land_ref.pin or "",
+                "lot_no": land_ref.lot_no or "",
+                "survey_no": land_ref.survey_no or "",
+                "area": land_ref.area or ""
+            }
+        else:
+            land_data = {
+                "id": None,
+                "land_owner": "",
+                "block_no": "",
+                "tdn_no": "",
+                "pin": "",
+                "lot_no": "",
+                "survey_no": "",
+                "area": ""
             }
 
         # Get the assessment
@@ -607,13 +658,13 @@ async def get_assessment_by_owner_id(
                     {
                         "id": record.id,
                         "pin": record.pin,
-                        "td_arp_no": record.td_arp_no,
-                        "total_assessed_value": record.total_assessed_value,
-                        "previous_owner": record.previous_owner,
-                        "date_of_effectivity": record.date_of_effectivity,
-                        "record_date": record.record_date,
+                        "tdArpNo": record.td_arp_no,
+                        "totalAssessedValue": record.total_assessed_value,
+                        "previousOwner": record.previous_owner,
+                        "dateOfEffectivity": record.date_of_effectivity,
+                        "date": record.record_date,
                         "assessment": record.assessment,
-                        "tax_mapping": record.tax_mapping,
+                        "taxMapping": record.tax_mapping,
                         "records": record.records,
                     }
                 )
@@ -633,7 +684,15 @@ async def get_assessment_by_owner_id(
                 "cct": assessment.cct,
                 "floor_plan": assessment.floor_plan,
                 "additional_item": assessment.additional_item,
-                "building_location": location_data,
+                "building_location": location_data if location else {
+                    "id": None,
+                    "address_municipality": assessment.address_municipality,
+                    "address_barangay": assessment.address_barangay,
+                    "street": assessment.street,
+                    "address_province": assessment.address_province,
+                    "bcode": None,
+                    "mun_code": None
+                },
                 "general_description": gen_desc_data,
                 "property_appraisal": appraisal_data,
                 "structural_material": struct_material_data,
@@ -641,7 +700,9 @@ async def get_assessment_by_owner_id(
                 "additional_items_summary": add_summary_data,
                 "property_assessment_items": assess_items_data,
                 "memoranda": memoranda_data,
-                "superseded_records": superseded_data,
+                "recordOfSupersededAssessment": {
+                    "records": superseded_data
+                },
             }
 
         # Build the complete assessment record
