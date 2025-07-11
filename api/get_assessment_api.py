@@ -88,6 +88,7 @@ async def get_all_assessments(
                 "tin": owner.tin,
                 "tel_no": owner.tel_no,
                 "td": owner.td,
+                "image_list": owner.image_list,
             }
 
             # Get approval section
@@ -165,6 +166,7 @@ async def get_all_assessments(
                         "address_province": location.address_province,
                         "bcode": location.bcode,
                         "mun_code": location.mun_code,
+                        "image_list": location.image_list
                     }
 
                 # Get general description
@@ -347,8 +349,9 @@ async def get_all_assessments(
                         "address_barangay": assessment.address_barangay,
                         "street": assessment.street,
                         "address_province": assessment.address_province,
-                        "bcode": None,
-                        "mun_code": None
+                        "bcode": location_data.get("bcode", None),
+                        "mun_code": location_data.get("mun_code", None),
+                        "image_list": location_data.get("image_list", [])
                     },
                     "general_description": gen_desc_data,
                     "property_appraisal": appraisal_data,
@@ -424,6 +427,7 @@ async def get_assessment_by_owner_id(
             "tin": owner.tin,
             "tel_no": owner.tel_no,
             "td": owner.td,
+            "image_list": owner.image_list,
         }
 
         # Get approval section
@@ -508,6 +512,7 @@ async def get_assessment_by_owner_id(
                     "address_province": location.address_province,
                     "bcode": location.bcode,
                     "mun_code": location.mun_code,
+                    "image_list": location.image_list
                 }
 
             # Get general description
@@ -690,8 +695,9 @@ async def get_assessment_by_owner_id(
                     "address_barangay": assessment.address_barangay,
                     "street": assessment.street,
                     "address_province": assessment.address_province,
-                    "bcode": None,
-                    "mun_code": None
+                    "bcode": location_data.get("bcode", None),
+                    "mun_code": location_data.get("mun_code", None),
+                    "image_list": location_data.get("image_list", [])
                 },
                 "general_description": gen_desc_data,
                 "property_appraisal": appraisal_data,

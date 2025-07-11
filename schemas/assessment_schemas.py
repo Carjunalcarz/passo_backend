@@ -24,6 +24,7 @@ class OwnerDetails(BaseModel):
     tin: Optional[str] = Field(None)
     tel_no: Optional[str] = Field(None, alias="telNo")
     td: Optional[str] = Field(None)
+    image_list: Optional[List[str]] = Field(None, alias="imageList")
 
     class Config:
         from_attributes = True
@@ -49,6 +50,8 @@ class BuildingLocation(BaseModel):
     address_province: Optional[str] = Field(None, alias="addressProvince")
     bcode: Optional[str] = Field(None)
     mun_code: Optional[str] = Field(None, alias="munCode")
+    image_list: Optional[List[str]] = Field(None, alias="imageList")
+    
 
     class Config:
         from_attributes = True

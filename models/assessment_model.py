@@ -21,6 +21,7 @@ class OwnerDetailsModel(Base):
     tin = Column(String)
     tel_no = Column(String)
     td = Column(String)
+    image_list = Column(JSON)
 
     # Relationships
     approval = relationship(
@@ -82,6 +83,7 @@ class BuildingLocationModel(Base):
     address_province = Column(String)
     bcode = Column(String)
     mun_code = Column(String)
+    image_list = Column(JSON)   
 
     # Relationships
     assessment = relationship("BuildingAssessmentModel", back_populates="location")
@@ -250,6 +252,7 @@ class BuildingAssessmentModel(Base):
     cct = Column(JSON)
     floor_plan = Column(JSON)
     additional_item = Column(String)
+    image_list = Column(JSON)
 
     # Relationships
     owner = relationship("OwnerDetailsModel", back_populates="building_assessment")

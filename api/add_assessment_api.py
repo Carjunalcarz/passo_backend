@@ -63,7 +63,8 @@ async def create_flexible_assessment(
             pin=request.get("ownerDetails", {}).get("pin"),
             tin=request.get("ownerDetails", {}).get("tin"),
             tel_no=request.get("ownerDetails", {}).get("telNo"),
-            td=td_value  # Temporary, will update after flush
+            td=td_value,  # Temporary, will update after flush
+            image_list=request.get("ownerDetails", {}).get("image_list")
         )
         db.add(owner)
         db.flush()  # Now owner.id is available
@@ -146,7 +147,8 @@ async def create_flexible_assessment(
                 assessment_level=request.get("assessmentLevel", 0.0),
                 cct=request.get("cct", {}),
                 floor_plan=request.get("floor_plan", []),
-                additional_item=request.get("additionalItem", "")
+                additional_item=request.get("additionalItem", ""),
+                image_list=request.get("buildingLocation", {}).get("image_list", [])
             )
             db.add(assessment)
             db.flush()
@@ -162,7 +164,8 @@ async def create_flexible_assessment(
                     street=request.get("buildingLocation", {}).get("street", ""),
                     address_province=request.get("buildingLocation", {}).get("address_province", ""),
                     bcode=request.get("buildingLocation", {}).get("bcode", ""),
-                    mun_code=request.get("buildingLocation", {}).get("mun_code", "")
+                    mun_code=request.get("buildingLocation", {}).get("mun_code", ""),
+                    image_list=request.get("buildingLocation", {}).get("image_list", [])
                 )
                 db.add(location)
                 db.flush()
