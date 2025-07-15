@@ -191,7 +191,9 @@ async def create_flexible_assessment(
                     total_floor_area=request.get("generalDescription", {}).get("total_floor_area", 0),
                     kind_of_bldg=request.get("generalDescription", {}).get("kind_of_bldg", ""),
                     structural_type=request.get("generalDescription", {}).get("structural_type", ""),
-                    unit_value=request.get("generalDescription", {}).get("unitValue", 0)
+                    unit_value=request.get("generalDescription", {}).get("unitValue", 0),
+                    cct_image=request.get("generalDescription", {}).get("cct_image", []),
+                    floor_plan_image=request.get("generalDescription", {}).get("floor_plan_image", [])
                 )
                 db.add(gen_desc)
                 db.flush()

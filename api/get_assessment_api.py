@@ -194,6 +194,8 @@ async def get_all_assessments(
                         "kind_of_bldg": gen_desc.kind_of_bldg,
                         "structural_type": gen_desc.structural_type,
                         "unit_value": gen_desc.unit_value,
+                        "cct_image": gen_desc.cct_image,
+                        "floor_plan_image": gen_desc.floor_plan_image
                     }
 
                 # Get property appraisal
@@ -371,6 +373,7 @@ async def get_all_assessments(
                 "approval_section": approval_data,
                 "land_reference": land_data,
                 "building_assessment": assessment_data,
+                "general_description": gen_desc_data,
             }
 
             result.append(complete_assessment)
@@ -540,6 +543,8 @@ async def get_assessment_by_owner_id(
                     "kind_of_bldg": gen_desc.kind_of_bldg,
                     "structural_type": gen_desc.structural_type,
                     "unit_value": gen_desc.unit_value,
+                    "cct_image": gen_desc.cct_image,
+                    "floor_plan_image": gen_desc.floor_plan_image
                 }
 
             # Get property appraisal
@@ -717,6 +722,7 @@ async def get_assessment_by_owner_id(
             "approval_section": approval_data,
             "land_reference": land_data,
             "building_assessment": assessment_data,
+            "general_description": gen_desc_data,
         }
 
         return complete_assessment

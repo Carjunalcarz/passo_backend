@@ -72,6 +72,8 @@ class GeneralDescription(BaseModel):
     kind_of_bldg: Optional[str] = Field(None, alias="kindOfBldg")
     structural_type: Optional[str] = Field(None, alias="structuralType")
     unit_value: Optional[float] = Field(None, alias="unitValue")
+    cct_image: Optional[List[str]] = Field(None, alias="cctImage")
+    floor_plan_image: Optional[List[str]] = Field(None, alias="floorPlanImage")
 
     class Config:
         from_attributes = True

@@ -36,6 +36,7 @@ class GeneralRevisionModel(Base):
     gr = Column(String(100), nullable=True)
     date_input = Column(String(20), default=func.now())
     inputed_by = Column(String(100), nullable=True)
+    
 
 
 # Create schema if it doesn't exist, then create all tables

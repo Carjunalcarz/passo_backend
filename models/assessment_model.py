@@ -109,6 +109,8 @@ class GeneralDescriptionModel(Base):
     kind_of_bldg = Column(String)
     structural_type = Column(String)
     unit_value = Column(Float)
+    cct_image = Column(JSON)
+    floor_plan_image = Column(JSON)
 
     # Relationships
     assessment = relationship(
