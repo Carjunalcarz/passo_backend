@@ -10,6 +10,13 @@ from authentication.user_auth import verify_token
 from database.database import get_db
 from models import ApprovalSectionModel, OwnerDetailsModel, LandReferenceModel, BuildingLocationModel, GeneralDescriptionModel, PropertyAppraisalModel, AdditionalItemModel, AdditionalItemsSummaryModel, PropertyAssessmentItemModel, MemorandumModel, SupersededRecordModel, StructuralMaterialModel, BuildingAssessmentModel
 from schemas.assessment_schemas import CompleteAssessmentRequest, OwnerDetails
+import os
+import io
+import base64
+import uuid
+from ftplib import FTP
+import json
+import traceback
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
@@ -35,6 +42,36 @@ def get_current_user(
     if username is None:
         raise HTTPException(status_code=401, detail='Invalid token')
     return username
+
+
+def upload_image_to_ftp(base64_str):
+    FTP_HOST = "127.0.0.1"
+    FTP_USER = "ajncarz"
+    FTP_PASS = "12345"
+    FTP_DIR = "/PASSO"
+    FTP_URL_BASE = "http://127.0.0.1/PASSO"
+
+    print("Base64 string (first 100 chars):", base64_str[:100])
+    print("Starting FTP upload...")
+    # Remove data:image/...;base64, if present
+    if ',' in base64_str:
+        base64_str = base64_str.split(',')[1]
+    print("Decoding base64...")
+    image_data = base64.b64decode(base64_str)
+    filename = f"{uuid.uuid4().hex}.png"
+    print("Connecting to FTP...")
+    with FTP(FTP_HOST) as ftp:
+        ftp.login(FTP_USER, FTP_PASS)
+        print("Logged in.")
+        ftp.cwd(FTP_DIR)
+        print("Changed directory.")
+        ftp.storbinary(f"STOR {filename}", io.BytesIO(image_data))
+        print("Upload complete.")
+    return f"{filename}"
+
+def upload_images_and_get_urls(image_list):
+    # If the list contains dicts with 'data_url', extract the value
+    return [upload_image_to_ftp(img['data_url'] if isinstance(img, dict) and 'data_url' in img else img) for img in image_list]
 
 
 @router.post('/add', response_model=Dict)
@@ -157,6 +194,9 @@ async def create_flexible_assessment(
             
             try:
                 # 5. Create building location
+            
+
+                # If your DB field is Text, use json.dumps
                 location = BuildingLocationModel(
                     assessment_id=assessment.id,
                     address_municipality=request.get("buildingLocation", {}).get("address_municipality", ""),
@@ -165,17 +205,22 @@ async def create_flexible_assessment(
                     address_province=request.get("buildingLocation", {}).get("address_province", ""),
                     bcode=request.get("buildingLocation", {}).get("bcode", ""),
                     mun_code=request.get("buildingLocation", {}).get("mun_code", ""),
-                    image_list=request.get("buildingLocation", {}).get("image_list", [])
+                    image_list=json.dumps(upload_images_and_get_urls(request.get("buildingLocation", {}).get("image_list", [])))  # Use json.dumps if field is Text
                 )
                 db.add(location)
                 db.flush()
                 created_ids["building_location_id"] = location.id
                 print(f"Created building location with ID: {location.id}")
             except Exception as e:
+                import traceback
                 print(f"Error creating building location: {str(e)}")
+                traceback.print_exc()
+                raise HTTPException(status_code=500, detail=f"Building location error: {str(e)}")
             
             try:
                 # 6. Create general description
+                
+
                 gen_desc = GeneralDescriptionModel(
                     assessment_id=assessment.id,
                     building_permit_no=request.get("generalDescription", {}).get("building_permit_no", ""),
@@ -192,8 +237,8 @@ async def create_flexible_assessment(
                     kind_of_bldg=request.get("generalDescription", {}).get("kind_of_bldg", ""),
                     structural_type=request.get("generalDescription", {}).get("structural_type", ""),
                     unit_value=request.get("generalDescription", {}).get("unitValue", 0),
-                    cct_image=request.get("generalDescription", {}).get("cct_image", []),
-                    floor_plan_image=request.get("generalDescription", {}).get("floor_plan_image", [])
+                    cct_image=json.dumps(upload_images_and_get_urls(request.get("generalDescription", {}).get("cct_image", []))),
+                    floor_plan_image=json.dumps(upload_images_and_get_urls(request.get("generalDescription", {}).get("floor_plan_image", [])))
                 )
                 db.add(gen_desc)
                 db.flush()
