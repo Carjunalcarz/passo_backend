@@ -94,7 +94,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZ
 
 ####
 # GET-assessment
-GET http://localhost:8000/assessment/get-assessment/76
+GET http://localhost:8000/assessment/get-assessments
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NTI5OTU4MTN9.RRymUpXZzr-Ly3ljUIxubvqyTlBEvZQ4f46UU_rr_dg
 

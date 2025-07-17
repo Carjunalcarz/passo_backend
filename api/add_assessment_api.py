@@ -101,7 +101,7 @@ async def create_flexible_assessment(
             tin=request.get("ownerDetails", {}).get("tin"),
             tel_no=request.get("ownerDetails", {}).get("telNo"),
             td=td_value,  # Temporary, will update after flush
-            image_list=request.get("ownerDetails", {}).get("image_list")
+            image_list=json.dumps(upload_images_and_get_urls(request.get("ownerDetails", {}).get("image_list", [])))
         )
         db.add(owner)
         db.flush()  # Now owner.id is available
