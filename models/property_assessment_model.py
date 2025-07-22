@@ -1,5 +1,7 @@
-from sqlalchemy import Column, String, Numeric, Date
+from sqlalchemy import Column, Date, Numeric, String
+
 from database.database import Base
+
 
 class PropertyAssessmentClean(Base):
     __tablename__ = "property_assessment_clean"
