@@ -1,7 +1,7 @@
-@baseUrl = http://localhost:8000
+@baseUrl = http: //localhost:8000
 ### Get JWT Token
 
-POST http://localhost:8000/token
+POST http: //localhost:8000/token
 Content-Type: application/x-www-form-urlencoded
 
 username=admin@admin.com&password=ajncarz123
@@ -9,46 +9,46 @@ username=admin@admin.com&password=ajncarz123
 ###
 
 ### Get Current User
-GET http://localhost:8000/users/me
+GET http: //localhost:8000/users/me
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJham5jYXJ6IiwiZXhwIjoxNzQ1MzcxMTQ2fQ.2DPyFpE6RVS054O92GBIJHxoVXETk1K9nrdWr7E6aiI
 
 ###
 
-GET http://localhost:8000/assessments?skip=0&limit=10
+GET http: //localhost:8000/assessments?skip=0&limit=10
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDUzODkyNDd9.Zd58h3tXxLwSENFW2z0xmOGz7PUoY_9LRUJ-AwPltUY
 
 ###
 
-GET http://localhost:8000/assessments?municipality=CARMEN&barangay=TAGCATONG&limit=100
+GET http: //localhost:8000/assessments?municipality=CARMEN&barangay=TAGCATONG&limit=100
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJham5jYXJ6IiwiZXhwIjoxNzQ1MzcxMTQ2fQ.2DPyFpE6RVS054O92GBIJHxoVXETk1K9nrdWr7E6aiI
 ###
 
-POST http://localhost:8000/assessments
+POST http: //localhost:8000/assessments
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDU0ODUxMTJ9.pFMwQNcrUx8_dqSP7SQlRjLAg3UPnpdVRn2rM5mu3Co
 Content-Type: application/json
 
 {
-    "tdn": "TEST12333333456782",
-    "market_val": 1000000,
-    "ass_value": 800000,
-    "sub_class": "Residential",
-    "eff_date": "2024-01-01",
-    "classification": "Residential",
-    "ass_level": 0.8,
-    "area": 100.5,
-    "taxability": "Taxable",
-    "gr_code": "GR001",
-    "gr": "General Residential",
-    "mun_code": "M001",
-    "municipality": "CARMEN",
-    "barangay_code": "B001",
-    "barangay": "Sample Barangay"
+  "tdn": "TEST12333333456782",
+  "market_val": 1000000,
+  "ass_value": 800000,
+  "sub_class": "Residential",
+  "eff_date": "2024-01-01",
+  "classification": "Residential",
+  "ass_level": 0.8,
+  "area": 100.5,
+  "taxability": "Taxable",
+  "gr_code": "GR001",
+  "gr": "General Residential",
+  "mun_code": "M001",
+  "municipality": "CARMEN",
+  "barangay_code": "B001",
+  "barangay": "Sample Barangay"
 }
 
 ###
 
 # Delete an assessment
-DELETE http://localhost:8000/assessments/TEST123456782
+DELETE http: //localhost:8000/assessments/TEST123456782
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDU0NTkxOTd9.03S8P9czQfzI6DHh7L13UL9stzvx_nlaSWZPU3Jqbhw
 
 
@@ -58,7 +58,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZ
 
 ### Add New Property Assessment
 ### Add Property Assessment
-POST http://localhost:8000/assessment/add
+POST http: //localhost:8000/assessment/add
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NDcyOTIwMzR9.vVy7zk6k4GKcm8RwLdE9wL1gbh6h6lOjNRb2UOqaVXY
 
@@ -117,7 +117,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZ
     "unitValue": 4820
   },
   "cct": {},
-  "floor_plan": [{}, {}, {}],
+  "floor_plan": [
+    {},
+    {},
+    {}
+  ],
   "structuralMaterial": {},
   "truss_other": "",
   "propertyAppraisal": {
@@ -161,7 +165,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZ
   },
   "assessmentValue": 136579.52,
   "buildingCategory": "commercial",
-  "taxableValue": ["on"],
+  "taxableValue": [
+    "on"
+  ],
   "effectivityOfAssessment": "2021",
   "assessmentLevel": 35,
   "memoranda": [
@@ -176,12 +182,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZ
 }
 
 ### Get All Owners
-GET http://localhost:8000/property-assessment/owners
+GET http: //localhost:8000/property-assessment/owners
 Authorization: Bearer your-token-here
 
 ####
 ##all values are required ##
-POST http://your-api-endpoint.com/api/property-assessment
+POST http: //your-api-endpoint.com/api/property-assessment
 Content-Type: application/json
 
 {
@@ -239,7 +245,11 @@ Content-Type: application/json
     "unitValue": 4820
   },
   "cct": {},
-  "floor_plan": [{}, {}, {}],
+  "floor_plan": [
+    {},
+    {},
+    {}
+  ],
   "structuralMaterial": {
     "walls_reinforced_concrete": true,
     "walls_plain_concrete": true,
@@ -366,7 +376,9 @@ Content-Type: application/json
   },
   "assessmentValue": 136579.52,
   "buildingCategory": "commercial",
-  "taxableValue": ["on"],
+  "taxableValue": [
+    "on"
+  ],
   "effectivityOfAssessment": "2021",
   "assessmentLevel": 35,
   "memoranda": [
