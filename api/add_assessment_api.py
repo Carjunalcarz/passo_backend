@@ -14,12 +14,106 @@ import os
 import io
 import base64
 import uuid
-from ftplib import FTP
+from ftplib import FTP, FTP_TLS, error_perm, error_temp
 import json
 import traceback
+import ssl
+import imghdr
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
+
+
+class MyFTP_TLS(FTP_TLS):
+    """
+    A custom FTP_TLS class that overrides the storbinary method to handle
+    ConnectionResetError during the data connection's TLS shutdown. This can
+    occur with some FTP servers that close the data connection abruptly after
+    the file is transferred.
+    """
+    def storbinary(self, cmd, fp, blocksize=8192, callback=None, rest=None):
+        self.voidcmd('TYPE I')
+        with self.transfercmd(cmd, rest) as conn:
+            while True:
+                buf = fp.read(blocksize)
+                if not buf:
+                    break
+                conn.sendall(buf)
+                if callback:
+                    callback(buf)
+            # Shutdown the TLS layer on the data connection
+            if isinstance(conn, ssl.SSLSocket):
+                try:
+                    conn.unwrap()
+                except ConnectionResetError:
+                    # Ignore the error that can be caused by the server
+                    # closing the data connection abruptly.
+                    pass
+        try:
+            return self.voidresp()
+        except error_temp as e:
+            # Some FTP servers may send this error after a successful transfer
+            # when they have issues with TLS session resumption on the data connection.
+            if "TLS session of data connection not resumed" in str(e):
+                # The file is likely transferred, so we can ignore this error.
+                return "226 Transfer complete (error ignored)."
+            raise
+
+
+def upload_image_to_ftp(base64_str, owner=None):
+    FTP_HOST = "192.168.1.22"
+    FTP_USER = "ajncarz"
+    FTP_PASS = "12345"
+    FTP_DIR = "/PASSO"
+    FTP_URL_BASE = "http://192.168.1.22/PASSO"
+    Year = datetime.now().year
+    Month = datetime.now().month
+    Day = datetime.now().day
+
+    print("Base64 string (first 100 chars):", base64_str[:100])
+    print("Starting FTP upload...")
+    # Remove data:image/...;base64, if present
+    if ',' in base64_str:
+        base64_str = base64_str.split(',')[1]
+    print("Decoding base64...")
+    image_data = base64.b64decode(base64_str)
+    image_type = imghdr.what(None, h=image_data)
+    if image_type is None:
+        image_type = 'png'
+    filename = f"{uuid.uuid4().hex}.{image_type}"
+
+    # Build the full directory path
+    dir_parts = ["/PASSO", str(Year), str(Month), str(Day)]
+    if owner:
+        owner_dir = "".join(c for c in str(owner) if c.isalnum() or c in (' ', '_', '-')).rstrip()
+        dir_parts.append(owner_dir)
+    else:
+        owner_dir = None
+    full_dir = "/".join(dir_parts)
+
+    print("Connecting to FTP...")
+    with FTP(FTP_HOST) as ftp:
+        ftp.login(FTP_USER, FTP_PASS)
+        print("Logged in.")
+        # Create each part of the directory if it doesn't exist
+        path_so_far = ""
+        for part in dir_parts:
+            path_so_far = f"{path_so_far}/{part}".replace("//", "/")
+            try:
+                ftp.mkd(path_so_far)
+            except Exception:
+                pass  # Directory may already exist
+        ftp.cwd(full_dir)
+        print("Changed directory.")
+        ftp.storbinary(f"STOR {filename}", io.BytesIO(image_data))
+        print("Upload complete.")
+    # Return the path including the owner directory if used
+    return f"{Year}/{Month}/{Day}/{owner_dir}/{filename}" if owner_dir else f"{Year}/{Month}/{Day}/{filename}"
+
+def upload_images_and_get_urls(image_list, owner=None):
+    # If the list contains dicts with 'data_url', extract the value
+    return [upload_image_to_ftp(img['data_url'] if isinstance(img, dict) and 'data_url' in img else img, owner) for img in image_list]
+
 
 
 def get_current_user(
@@ -44,34 +138,7 @@ def get_current_user(
     return username
 
 
-def upload_image_to_ftp(base64_str):
-    FTP_HOST = "127.0.0.1"
-    FTP_USER = "ajncarz"
-    FTP_PASS = "12345"
-    FTP_DIR = "/PASSO"
-    FTP_URL_BASE = "http://127.0.0.1/PASSO"
 
-    print("Base64 string (first 100 chars):", base64_str[:100])
-    print("Starting FTP upload...")
-    # Remove data:image/...;base64, if present
-    if ',' in base64_str:
-        base64_str = base64_str.split(',')[1]
-    print("Decoding base64...")
-    image_data = base64.b64decode(base64_str)
-    filename = f"{uuid.uuid4().hex}.png"
-    print("Connecting to FTP...")
-    with FTP(FTP_HOST) as ftp:
-        ftp.login(FTP_USER, FTP_PASS)
-        print("Logged in.")
-        ftp.cwd(FTP_DIR)
-        print("Changed directory.")
-        ftp.storbinary(f"STOR {filename}", io.BytesIO(image_data))
-        print("Upload complete.")
-    return f"{filename}"
-
-def upload_images_and_get_urls(image_list):
-    # If the list contains dicts with 'data_url', extract the value
-    return [upload_image_to_ftp(img['data_url'] if isinstance(img, dict) and 'data_url' in img else img) for img in image_list]
 
 
 @router.post('/add', response_model=Dict)
@@ -101,7 +168,7 @@ async def create_flexible_assessment(
             tin=request.get("ownerDetails", {}).get("tin"),
             tel_no=request.get("ownerDetails", {}).get("telNo"),
             td=td_value,  # Temporary, will update after flush
-            image_list=json.dumps(upload_images_and_get_urls(request.get("ownerDetails", {}).get("image_list", [])))
+            image_list=json.dumps(upload_images_and_get_urls(request.get("ownerDetails", {}).get("image_list", []), request.get("ownerDetails", {}).get("owner")))
         )
         db.add(owner)
         db.flush()  # Now owner.id is available
@@ -205,7 +272,7 @@ async def create_flexible_assessment(
                     address_province=request.get("buildingLocation", {}).get("address_province", ""),
                     bcode=request.get("buildingLocation", {}).get("bcode", ""),
                     mun_code=request.get("buildingLocation", {}).get("mun_code", ""),
-                    image_list=json.dumps(upload_images_and_get_urls(request.get("buildingLocation", {}).get("image_list", [])))  # Use json.dumps if field is Text
+                    image_list=json.dumps(upload_images_and_get_urls(request.get("buildingLocation", {}).get("image_list", []), owner.owner))  # Use json.dumps if field is Text
                 )
                 db.add(location)
                 db.flush()
@@ -237,8 +304,8 @@ async def create_flexible_assessment(
                     kind_of_bldg=request.get("generalDescription", {}).get("kind_of_bldg", ""),
                     structural_type=request.get("generalDescription", {}).get("structural_type", ""),
                     unit_value=request.get("generalDescription", {}).get("unitValue", 0),
-                    cct_image=json.dumps(upload_images_and_get_urls(request.get("generalDescription", {}).get("cct_image", []))),
-                    floor_plan_image=json.dumps(upload_images_and_get_urls(request.get("generalDescription", {}).get("floor_plan_image", [])))
+                    cct_image=json.dumps(upload_images_and_get_urls(request.get("generalDescription", {}).get("cct_image", []), owner.owner)),
+                    floor_plan_image=json.dumps(upload_images_and_get_urls(request.get("generalDescription", {}).get("floor_plan_image", []), owner.owner))
                 )
                 db.add(gen_desc)
                 db.flush()
