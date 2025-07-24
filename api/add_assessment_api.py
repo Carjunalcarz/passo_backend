@@ -61,11 +61,11 @@ class MyFTP_TLS(FTP_TLS):
 
 
 def upload_image_to_ftp(base64_str, owner=None):
-    FTP_HOST = "192.168.1.22"
+    FTP_HOST = "192.168.1.106"
     FTP_USER = "ajncarz"
     FTP_PASS = "12345"
     FTP_DIR = "/PASSO"
-    FTP_URL_BASE = "http://192.168.1.22/PASSO"
+    FTP_URL_BASE = "http://192.168.1.106/PASSO"
     Year = datetime.now().year
     Month = datetime.now().month
     Day = datetime.now().day
@@ -157,7 +157,9 @@ async def create_flexible_assessment(
     
     try:
         # 1. Create owner details
-        td_value = request.get("ownerDetails", {}).get("td")
+        mun_code = request.get("buildingLocation", {}).get("mun_code")
+        bcode = request.get("buildingLocation", {}).get("bcode")
+        td_value = mun_code + "-" + bcode
         owner = OwnerDetailsModel(
             owner=request.get("ownerDetails", {}).get("owner"),
             owner_address=request.get("ownerDetails", {}).get("ownerAddress"),
@@ -176,7 +178,7 @@ async def create_flexible_assessment(
         # Replace last digit of td_value with owner.id
         if td_value and owner.id is not None:
             # If td_value is a string and owner.id is an int
-            td_new = td_value[:-1] +"-"+ str(owner.id)
+            td_new = td_value +"-"+ str(owner.id)
             owner.td = td_new
             db.flush()  # Update the value in the database
 
@@ -507,5 +509,333 @@ async def create_flexible_assessment(
         raise HTTPException(
             status_code=500,
             detail={'message': 'An error occurred while creating the assessment', 'error': str(e)}
+        )
+
+
+@router.put('/update', response_model=Dict)
+async def update_flexible_assessment(
+    request: dict,
+    db: Session = Depends(get_db),
+    current_user: str = Depends(get_current_user),
+) -> Dict:
+    """
+    Update an existing assessment and all related records using their IDs.
+    """
+    try:
+        updated_ids = {}
+
+        # 1. Update Owner Details
+        owner_data = request.get("ownerDetails", {})
+        owner_id = owner_data.get("owner_id")
+        if owner_id:
+            owner = db.query(OwnerDetailsModel).filter_by(id=owner_id).first()
+            if owner:
+                owner.owner = owner_data.get("owner", owner.owner)
+                owner.owner_address = owner_data.get("ownerAddress", owner.owner_address)
+                owner.admin_ben_user = owner_data.get("admin_ben_user", owner.admin_ben_user)
+                owner.admin_ben_user_address = owner_data.get("admin_ben_user_address", owner.admin_ben_user_address)
+                owner.transaction_code = owner_data.get("transactionCode", owner.transaction_code)
+                owner.pin = owner_data.get("pin", owner.pin)
+                owner.tin = owner_data.get("tin", owner.tin)
+                owner.tel_no = owner_data.get("telNo", owner.tel_no)
+                owner.td = owner_data.get("td", owner.td)
+                owner.image_list = json.dumps(upload_images_and_get_urls(owner_data.get("image_list", []), owner.owner))
+                db.flush()
+                updated_ids["owner_id"] = owner.id
+
+        # 2. Update Approval Section
+        approval_data = request.get("approvalSection", {})
+        approval_section_id = approval_data.get("approval_section_id")
+        if approval_section_id:
+            approval = db.query(ApprovalSectionModel).filter_by(id=approval_section_id).first()
+            if approval:
+                approval.appraised_by = approval_data.get("appraisedBy", approval.appraised_by)
+                approval.recommending_approval = approval_data.get("recommendingApproval", approval.recommending_approval)
+                approval.approved_by_province = approval_data.get("approvedByProvince", approval.approved_by_province)
+                approval.appraised_date = approval_data.get("appraisedDate", approval.appraised_date)
+                approval.municipality_assessor_date = approval_data.get("municipalityAssessorDate", approval.municipality_assessor_date)
+                approval.provincial_assessor_date = approval_data.get("provincialAssessorDate", approval.provincial_assessor_date)
+                db.flush()
+                updated_ids["approval_section_id"] = approval.id
+
+        # 3. Update Land Reference
+        land_ref_data = request.get("landReference", {})
+        land_reference_id = land_ref_data.get("land_reference_id")
+        if land_reference_id:
+            land_ref = db.query(LandReferenceModel).filter_by(id=land_reference_id).first()
+            if land_ref:
+                land_ref.land_owner = land_ref_data.get("land_owner", land_ref.land_owner)
+                land_ref.block_no = land_ref_data.get("block_no", land_ref.block_no)
+                land_ref.tdn_no = land_ref_data.get("tdn_no", land_ref.tdn_no)
+                land_ref.pin = land_ref_data.get("pin", land_ref.pin)
+                land_ref.lot_no = land_ref_data.get("lot_no", land_ref.lot_no)
+                land_ref.survey_no = land_ref_data.get("survey_no", land_ref.survey_no)
+                land_ref.area = land_ref_data.get("area", land_ref.area)
+                db.flush()
+                updated_ids["land_reference_id"] = land_ref.id
+
+        # 4. Update Building Assessment
+        assessment_id = request.get("building_assessment_id")
+        if assessment_id:
+            assessment = db.query(BuildingAssessmentModel).filter_by(id=assessment_id).first()
+            if assessment:
+                assessment.street = request.get("street", assessment.street)
+                assessment.address_municipality = request.get("address_municipality", assessment.address_municipality)
+                assessment.address_province = request.get("address_province", assessment.address_province)
+                assessment.address_barangay = request.get("address_barangay", assessment.address_barangay)
+                assessment.assessment_value = request.get("propertyAppraisal", {}).get("marketValue", assessment.assessment_value)
+                assessment.building_category = request.get("propertyAppraisal", {}).get("buildingType", assessment.building_category)
+                assessment.taxable_value = request.get("taxableValue", assessment.taxable_value)
+                effectivity_data = request.get("effectivityOfAssessment", "")
+                if isinstance(effectivity_data, dict):
+                    effectivity_str = f"{effectivity_data.get('quarter', '')} {effectivity_data.get('year', '')}".strip()
+                else:
+                    effectivity_str = str(effectivity_data) if effectivity_data else assessment.effectivity_of_assessment
+                assessment.effectivity_of_assessment = effectivity_str
+                assessment.assessment_level = request.get("assessmentLevel", assessment.assessment_level)
+                assessment.cct = request.get("cct", assessment.cct)
+                assessment.floor_plan = request.get("floor_plan", assessment.floor_plan)
+                assessment.additional_item = request.get("additionalItem", assessment.additional_item)
+                assessment.image_list = request.get("buildingLocation", {}).get("image_list", assessment.image_list)
+                db.flush()
+                updated_ids["building_assessment_id"] = assessment.id
+
+                # 5. Update Building Location
+                location_data = request.get("buildingLocation", {})
+                building_location_id = location_data.get("building_location_id")
+                if building_location_id:
+                    location = db.query(BuildingLocationModel).filter_by(id=building_location_id).first()
+                    if location:
+                        location.address_municipality = location_data.get("address_municipality", location.address_municipality)
+                        location.address_barangay = location_data.get("address_barangay", location.address_barangay)
+                        location.street = location_data.get("street", location.street)
+                        location.address_province = location_data.get("address_province", location.address_province)
+                        location.bcode = location_data.get("bcode", location.bcode)
+                        location.mun_code = location_data.get("mun_code", location.mun_code)
+                        location.image_list = json.dumps(upload_images_and_get_urls(location_data.get("image_list", []), owner.owner))
+                        db.flush()
+                        updated_ids["building_location_id"] = location.id
+
+                # 6. Update General Description
+                gen_desc_data = request.get("generalDescription", {})
+                general_description_id = gen_desc_data.get("general_description_id")
+                if general_description_id:
+                    gen_desc = db.query(GeneralDescriptionModel).filter_by(id=general_description_id).first()
+                    if gen_desc:
+                        gen_desc.building_permit_no = gen_desc_data.get("building_permit_no", gen_desc.building_permit_no)
+                        gen_desc.certificate_of_completion_issued_on = gen_desc_data.get("certificate_of_completion_issued_on", gen_desc.certificate_of_completion_issued_on)
+                        gen_desc.certificate_of_occupancy_issued_on = gen_desc_data.get("certificate_of_occupancy_issued_on", gen_desc.certificate_of_occupancy_issued_on)
+                        gen_desc.date_of_occupied = gen_desc_data.get("date_of_occupied", gen_desc.date_of_occupied)
+                        gen_desc.bldg_age = gen_desc_data.get("bldg_age", gen_desc.bldg_age)
+                        gen_desc.no_of_storeys = gen_desc_data.get("no_of_storeys", gen_desc.no_of_storeys)
+                        gen_desc.area_of_1st_floor = gen_desc_data.get("area_of_1st_floor", gen_desc.area_of_1st_floor)
+                        gen_desc.area_of_2nd_floor = gen_desc_data.get("area_of_2nd_floor", gen_desc.area_of_2nd_floor)
+                        gen_desc.area_of_3rd_floor = gen_desc_data.get("area_of_3rd_floor", gen_desc.area_of_3rd_floor)
+                        gen_desc.area_of_4th_floor = gen_desc_data.get("area_of_4th_floor", gen_desc.area_of_4th_floor)
+                        gen_desc.total_floor_area = gen_desc_data.get("total_floor_area", gen_desc.total_floor_area)
+                        gen_desc.kind_of_bldg = gen_desc_data.get("kind_of_bldg", gen_desc.kind_of_bldg)
+                        gen_desc.structural_type = gen_desc_data.get("structural_type", gen_desc.structural_type)
+                        gen_desc.unit_value = gen_desc_data.get("unitValue", gen_desc.unit_value)
+                        gen_desc.cct_image = json.dumps(upload_images_and_get_urls(gen_desc_data.get("cct_image", []), owner.owner))
+                        gen_desc.floor_plan_image = json.dumps(upload_images_and_get_urls(gen_desc_data.get("floor_plan_image", []), owner.owner))
+                        db.flush()
+                        updated_ids["general_description_id"] = gen_desc.id
+
+                # 7. Update Property Appraisal
+                appraisal_data = request.get("propertyAppraisal", {})
+                property_appraisal_id = appraisal_data.get("property_appraisal_id")
+                if property_appraisal_id:
+                    appraisal = db.query(PropertyAppraisalModel).filter_by(id=property_appraisal_id).first()
+                    if appraisal:
+                        appraisal.building_type = appraisal_data.get("buildingType", appraisal.building_type)
+                        appraisal.building_structure = appraisal_data.get("buildingStructure", appraisal.building_structure)
+                        appraisal.total_area = appraisal_data.get("totalArea", appraisal.total_area)
+                        appraisal.unit_value = appraisal_data.get("unitValue", appraisal.unit_value)
+                        appraisal.smv = appraisal_data.get("smv", appraisal.smv)
+                        appraisal.base_market_value = appraisal_data.get("baseMarketValue", appraisal.base_market_value)
+                        appraisal.depreciation = appraisal_data.get("depreciation", appraisal.depreciation)
+                        appraisal.market_value = appraisal_data.get("marketValue", appraisal.market_value)
+                        db.flush()
+                        updated_ids["property_appraisal_id"] = appraisal.id
+
+                # 8. Update Structural Material
+                struct_material_data = request.get("structuralMaterial", {})
+                structural_material_id = struct_material_data.get("structural_material_id")
+                if structural_material_id:
+                    struct_material = db.query(StructuralMaterialModel).filter_by(id=structural_material_id).first()
+                    if struct_material:
+                        struct_material.material_data = struct_material_data.get("material_data", struct_material.material_data)
+                        struct_material.truss_other = struct_material_data.get("truss_other", struct_material.truss_other)
+                        db.flush()
+                        updated_ids["structural_material_id"] = struct_material.id
+
+                # 9. Update Additional Items (list)
+                additional_items_data = request.get("additionalItems", {}).get("items", [])
+                existing_additional_items = {item.id: item for item in assessment.additional_items}
+                sent_ids = set()
+                for item in additional_items_data:
+                    item_id = item.get("id")
+                    if item_id and item_id in existing_additional_items:
+                        add_item = existing_additional_items[item_id]
+                        add_item.label = item.get("label", add_item.label)
+                        add_item.item_value = item.get("value", add_item.item_value)
+                        add_item.quantity = item.get("quantity", add_item.quantity)
+                        add_item.amount = item.get("amount", add_item.amount)
+                        add_item.description = item.get("description", add_item.description)
+                        db.flush()
+                        sent_ids.add(item_id)
+                    else:
+                        # New item
+                        add_item = AdditionalItemModel(
+                            assessment_id=assessment.id,
+                            item_id=item.get("id"),
+                            label=item.get("label", ""),
+                            item_value=item.get("value", {}),
+                            quantity=item.get("quantity", 0),
+                            amount=item.get("amount", 0),
+                            description=item.get("description", "")
+                        )
+                        db.add(add_item)
+                        db.flush()
+                        sent_ids.add(add_item.id)
+                # Delete items not in request
+                for item_id, item in existing_additional_items.items():
+                    if item_id not in sent_ids:
+                        db.delete(item)
+                updated_ids["additional_item_ids"] = list(sent_ids)
+
+                # 10. Update Additional Items Summary
+                add_summary_data = request.get("additionalItems", {})
+                additional_items_summary_id = add_summary_data.get("additional_items_summary_id")
+                if additional_items_summary_id:
+                    add_summary = db.query(AdditionalItemsSummaryModel).filter_by(id=additional_items_summary_id).first()
+                    if add_summary:
+                        add_summary.total = add_summary_data.get("total", add_summary.total)
+                        add_summary.sub_total = add_summary_data.get("subTotal", add_summary.sub_total)
+                        db.flush()
+                        updated_ids["additional_items_summary_id"] = add_summary.id
+
+                # 11. Update Property Assessment Items (list)
+                property_assessment_items_data = request.get("propertyAssessment", {}).get("items", [])
+                existing_assessment_items = {item.id: item for item in assessment.assessment_items}
+                sent_assess_ids = set()
+                for item in property_assessment_items_data:
+                    item_id = item.get("id")
+                    if item_id and item_id in existing_assessment_items:
+                        assess_item = existing_assessment_items[item_id]
+                        assess_item.area = item.get("area", assess_item.area)
+                        assess_item.unit_value = item.get("unitValue", assess_item.unit_value)
+                        assess_item.smv = item.get("smv", assess_item.smv)
+                        assess_item.base_market_value = item.get("baseMarketValue", assess_item.base_market_value)
+                        assess_item.depreciation_percentage = item.get("depreciationPercentage", assess_item.depreciation_percentage)
+                        assess_item.depreciator_cost = item.get("depreciatorCost", assess_item.depreciator_cost)
+                        assess_item.market_value = item.get("marketValue", assess_item.market_value)
+                        assess_item.building_category = item.get("buildingCategory", assess_item.building_category)
+                        db.flush()
+                        sent_assess_ids.add(item_id)
+                    else:
+                        # New item
+                        assess_item = PropertyAssessmentItemModel(
+                            assessment_id=assessment.id,
+                            item_id=item.get("id", ""),
+                            area=item.get("area", 0),
+                            unit_value=item.get("unitValue", 0),
+                            smv=item.get("smv", 0),
+                            base_market_value=item.get("baseMarketValue", 0),
+                            depreciation_percentage=item.get("depreciationPercentage", 0),
+                            depreciator_cost=item.get("depreciatorCost", 0),
+                            market_value=item.get("marketValue", 0),
+                            building_category=item.get("buildingCategory", "")
+                        )
+                        db.add(assess_item)
+                        db.flush()
+                        sent_assess_ids.add(assess_item.id)
+                # Delete items not in request
+                for item_id, item in existing_assessment_items.items():
+                    if item_id not in sent_assess_ids:
+                        db.delete(item)
+                updated_ids["property_assessment_item_ids"] = list(sent_assess_ids)
+
+                # 12. Update Memoranda (list)
+                memoranda_data = request.get("memoranda", [])
+                existing_memos = {memo.id: memo for memo in assessment.memoranda}
+                sent_memo_ids = set()
+                for memo in memoranda_data:
+                    memo_id = memo.get("id")
+                    if memo_id and memo_id in existing_memos:
+                        memorandum = existing_memos[memo_id]
+                        memorandum.date = memo.get("date", memorandum.date)
+                        memorandum.details = memo.get("details", memorandum.details)
+                        db.flush()
+                        sent_memo_ids.add(memo_id)
+                    else:
+                        # New memo
+                        memorandum = MemorandumModel(
+                            assessment_id=assessment.id,
+                            date=memo.get("date"),
+                            details=memo.get("details", "")
+                        )
+                        db.add(memorandum)
+                        db.flush()
+                        sent_memo_ids.add(memorandum.id)
+                # Delete memos not in request
+                for memo_id, memo in existing_memos.items():
+                    if memo_id not in sent_memo_ids:
+                        db.delete(memo)
+                updated_ids["memorandum_ids"] = list(sent_memo_ids)
+
+                # 13. Update Superseded Records (list)
+                superseded_data = request.get("recordOfSupersededAssessment", {}).get("records", [])
+                existing_superseded = {rec.id: rec for rec in assessment.superseded_records}
+                sent_superseded_ids = set()
+                for record in superseded_data:
+                    record_id = record.get("id")
+                    if record_id and record_id in existing_superseded:
+                        superseded = existing_superseded[record_id]
+                        superseded.pin = record.get("pin", superseded.pin)
+                        superseded.td_arp_no = record.get("tdArpNo", superseded.td_arp_no)
+                        superseded.total_assessed_value = record.get("totalAssessedValue", superseded.total_assessed_value)
+                        superseded.previous_owner = record.get("previousOwner", superseded.previous_owner)
+                        superseded.date_of_effectivity = record.get("dateOfEffectivity", superseded.date_of_effectivity)
+                        superseded.record_date = record.get("date", superseded.record_date)
+                        superseded.assessment = record.get("assessment", superseded.assessment)
+                        superseded.tax_mapping = record.get("taxMapping", superseded.tax_mapping)
+                        superseded.records = record.get("records", superseded.records)
+                        db.flush()
+                        sent_superseded_ids.add(record_id)
+                    else:
+                        # New record
+                        superseded = SupersededRecordModel(
+                            assessment_id=assessment.id,
+                            pin=record.get("pin", ""),
+                            td_arp_no=record.get("tdArpNo", ""),
+                            total_assessed_value=record.get("totalAssessedValue", ""),
+                            previous_owner=record.get("previousOwner", ""),
+                            date_of_effectivity=record.get("dateOfEffectivity"),
+                            record_date=record.get("date"),
+                            assessment=record.get("assessment", ""),
+                            tax_mapping=record.get("taxMapping", ""),
+                            records=record.get("records", "")
+                        )
+                        db.add(superseded)
+                        db.flush()
+                        sent_superseded_ids.add(superseded.id)
+                # Delete records not in request
+                for record_id, record in existing_superseded.items():
+                    if record_id not in sent_superseded_ids:
+                        db.delete(record)
+                updated_ids["superseded_record_ids"] = list(sent_superseded_ids)
+
+        db.commit()
+        return {
+            "status": "success",
+            "message": "Assessment data updated successfully",
+            "data": updated_ids
+        }
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail={'message': 'An error occurred while updating the assessment', 'error': str(e)}
         )
 
