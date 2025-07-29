@@ -139,7 +139,10 @@ def build_complete_assessment(owner, db: Session) -> Dict:
                 "address_province": location.address_province,
                 "bcode": location.bcode,
                 "mun_code": location.mun_code,
-                "image_list": location.image_list
+                "image_list": location.image_list,
+                "year": location.year,
+                "gr_code": location.gr_code,
+                "gr_name": location.gr_name
             }
 
         gen_desc = (

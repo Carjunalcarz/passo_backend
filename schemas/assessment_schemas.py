@@ -50,6 +50,9 @@ class BuildingLocation(BaseModel):
     address_province: Optional[str] = Field(None, alias="addressProvince")
     bcode: Optional[str] = Field(None)
     mun_code: Optional[str] = Field(None, alias="munCode")
+    year: Optional[str] = Field(None, alias="year")
+    gr_code: Optional[str] = Field(None, alias="grCode")
+    gr_name: Optional[str] = Field(None, alias="grName")
     image_list: Optional[List[str]] = Field(None, alias="imageList")
     
 

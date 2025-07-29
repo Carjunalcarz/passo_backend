@@ -61,54 +61,64 @@ class MyFTP_TLS(FTP_TLS):
 
 
 def upload_image_to_ftp(base64_str, owner=None):
-    FTP_HOST = "192.168.1.106"
-    FTP_USER = "ajncarz"
-    FTP_PASS = "12345"
-    FTP_DIR = "/PASSO"
-    FTP_URL_BASE = "http://192.168.1.106/PASSO"
-    Year = datetime.now().year
-    Month = datetime.now().month
-    Day = datetime.now().day
+    try:
+        FTP_HOST = os.getenv("FTP_HOST")
+        FTP_USER = os.getenv("FTP_USER")
+        FTP_PASS = os.getenv("FTP_PASS")
+        
+        if not all([FTP_HOST, FTP_USER, FTP_PASS]):
+            print("FTP credentials not configured, skipping image upload")
+            return "no-upload-path"
+            
+        FTP_DIR = "/PASSO"
+        FTP_URL_BASE = f"ftp://{FTP_USER}:{FTP_PASS}@{FTP_HOST}{FTP_DIR}"
+        Year = datetime.now().year
+        Month = datetime.now().month
+        Day = datetime.now().day
 
-    print("Base64 string (first 100 chars):", base64_str[:100])
-    print("Starting FTP upload...")
-    # Remove data:image/...;base64, if present
-    if ',' in base64_str:
-        base64_str = base64_str.split(',')[1]
-    print("Decoding base64...")
-    image_data = base64.b64decode(base64_str)
-    image_type = imghdr.what(None, h=image_data)
-    if image_type is None:
-        image_type = 'png'
-    filename = f"{uuid.uuid4().hex}.{image_type}"
+        print("Base64 string (first 100 chars):", base64_str[:100])
+        print("Starting FTP upload...")
+        # Remove data:image/...;base64, if present
+        if ',' in base64_str:
+            base64_str = base64_str.split(',')[1]
+        print("Decoding base64...")
+        image_data = base64.b64decode(base64_str)
+        image_type = imghdr.what(None, h=image_data)
+        if image_type is None:
+            image_type = 'png'
+        filename = f"{uuid.uuid4().hex}.{image_type}"
 
-    # Build the full directory path
-    dir_parts = ["/PASSO", str(Year), str(Month), str(Day)]
-    if owner:
-        owner_dir = "".join(c for c in str(owner) if c.isalnum() or c in (' ', '_', '-')).rstrip()
-        dir_parts.append(owner_dir)
-    else:
-        owner_dir = None
-    full_dir = "/".join(dir_parts)
+        # Build the full directory path
+        dir_parts = ["/PASSO", str(Year), str(Month), str(Day)]
+        if owner:
+            owner_dir = "".join(c for c in str(owner) if c.isalnum() or c in (' ', '_', '-')).rstrip()
+            dir_parts.append(owner_dir)
+        else:
+            owner_dir = None
+        full_dir = "/".join(dir_parts)
 
-    print("Connecting to FTP...")
-    with FTP(FTP_HOST) as ftp:
-        ftp.login(FTP_USER, FTP_PASS)
-        print("Logged in.")
-        # Create each part of the directory if it doesn't exist
-        path_so_far = ""
-        for part in dir_parts:
-            path_so_far = f"{path_so_far}/{part}".replace("//", "/")
-            try:
-                ftp.mkd(path_so_far)
-            except Exception:
-                pass  # Directory may already exist
-        ftp.cwd(full_dir)
-        print("Changed directory.")
-        ftp.storbinary(f"STOR {filename}", io.BytesIO(image_data))
-        print("Upload complete.")
-    # Return the path including the owner directory if used
-    return f"{Year}/{Month}/{Day}/{owner_dir}/{filename}" if owner_dir else f"{Year}/{Month}/{Day}/{filename}"
+        print("Connecting to FTP...")
+        with FTP(FTP_HOST) as ftp:
+            ftp.login(FTP_USER, FTP_PASS)
+            print("Logged in.")
+            # Create each part of the directory if it doesn't exist
+            path_so_far = ""
+            for part in dir_parts:
+                path_so_far = f"{path_so_far}/{part}".replace("//", "/")
+                try:
+                    ftp.mkd(path_so_far)
+                except Exception:
+                    pass  # Directory may already exist
+            ftp.cwd(full_dir)
+            print("Changed directory.")
+            ftp.storbinary(f"STOR {filename}", io.BytesIO(image_data))
+            print("Upload complete.")
+        # Return the path including the owner directory if used
+        return f"{Year}/{Month}/{Day}/{owner_dir}/{filename}" if owner_dir else f"{Year}/{Month}/{Day}/{filename}"
+    except Exception as e:
+        print(f"FTP upload failed: {str(e)}")
+        # Return a placeholder path or handle the error as needed
+        return "upload-failed"
 
 def upload_images_and_get_urls(image_list, owner=None):
     # If the list contains dicts with 'data_url', extract the value
@@ -137,6 +147,8 @@ def get_current_user(
         raise HTTPException(status_code=401, detail='Invalid token')
     return username
 
+    
+
 
 
 
@@ -159,7 +171,8 @@ async def create_flexible_assessment(
         # 1. Create owner details
         mun_code = request.get("buildingLocation", {}).get("mun_code")
         bcode = request.get("buildingLocation", {}).get("bcode")
-        td_value = mun_code + "-" + bcode
+        year = request.get("buildingLocation", {}).get("year")
+        td_value = str(year) + "-" + mun_code + "-" + bcode
         owner = OwnerDetailsModel(
             owner=request.get("ownerDetails", {}).get("owner"),
             owner_address=request.get("ownerDetails", {}).get("ownerAddress"),
@@ -274,6 +287,9 @@ async def create_flexible_assessment(
                     address_province=request.get("buildingLocation", {}).get("address_province", ""),
                     bcode=request.get("buildingLocation", {}).get("bcode", ""),
                     mun_code=request.get("buildingLocation", {}).get("mun_code", ""),
+                    year=request.get("buildingLocation", {}).get("year", ""),
+                    gr_code=request.get("buildingLocation", {}).get("gr_code", ""),
+                    gr_name=request.get("buildingLocation", {}).get("gr_name", ""),
                     image_list=json.dumps(upload_images_and_get_urls(request.get("buildingLocation", {}).get("image_list", []), owner.owner))  # Use json.dumps if field is Text
                 )
                 db.add(location)
@@ -512,7 +528,7 @@ async def create_flexible_assessment(
         )
 
 
-@router.put('/update', response_model=Dict)
+@router.put('/update/{assessment_id}', response_model=Dict)
 async def update_flexible_assessment(
     request: dict,
     db: Session = Depends(get_db),
@@ -575,7 +591,7 @@ async def update_flexible_assessment(
                 updated_ids["land_reference_id"] = land_ref.id
 
         # 4. Update Building Assessment
-        assessment_id = request.get("building_assessment_id")
+        assessment_id = assessment_id
         if assessment_id:
             assessment = db.query(BuildingAssessmentModel).filter_by(id=assessment_id).first()
             if assessment:

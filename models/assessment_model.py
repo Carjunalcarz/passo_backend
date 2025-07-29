@@ -83,7 +83,10 @@ class BuildingLocationModel(Base):
     address_province = Column(String)
     bcode = Column(String)
     mun_code = Column(String)
+    gr_code = Column(String)
+    gr_name = Column(String)
     image_list = Column(JSON)   
+    year = Column(String)
 
     # Relationships
     assessment = relationship("BuildingAssessmentModel", back_populates="location")
