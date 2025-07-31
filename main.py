@@ -9,12 +9,15 @@ from api import (
     general_revision_api,
     get_assessment_api,
     property_assessment_api,
+    unit_cost_api,
 )
 from database.database import engine
 from models import user_model as models
+from models import unit_cost_model
 
 # Run migrations
 models.Base.metadata.create_all(bind=engine)
+unit_cost_model.Base.metadata.create_all(bind=engine)
 
 # Create FastAPI instance
 app = FastAPI(
@@ -52,5 +55,6 @@ app.include_router(
     tags=["Assessment"],
 )
 app.include_router(general_revision_api.router)
+app.include_router(unit_cost_api.router)
 # Note: Start the server with:
 # python -m uvicorn main:app --reload

@@ -1,0 +1,32 @@
+##
+
+POST http://localhost:8000/token
+Content-Type: application/x-www-form-urlencoded
+
+username=admin@admin.com&password=ajncarz123
+
+###
+
+
+###
+
+POST http://localhost:8000/unit-cost
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NTQyODE1Nzl9.BimcQKmIEiplr1GtLXhm8i7By-qrG-1gm8DQlM5Ric0
+{
+  "struct_class_type": "Concrete",
+  "category": "Residential",
+  "smv_year": "2018",
+  "smv_code": "18",
+  "smv_name": "4th Revision",
+  "unit_cost": 12000.50,
+  "increase": 10.5,
+  "remarks": "Initial entry for July"
+
+} 
+
+
+###
+GET http://localhost:8000/unit-costs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE3NTQyODE1Nzl9.BimcQKmIEiplr1GtLXhm8i7By-qrG-1gm8DQlM5Ric0
